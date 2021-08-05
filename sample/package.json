@@ -13,7 +13,7 @@
     "@types/mocha": "^8.2.2",
     "@types/node": "^15.6.1",
     "chai": "^4.3.4",
-    "multibaas-hardhat-plugin": "./..",
+    "hardhat-multibaas-plugin": "./..",
     "ts-node": "^10.0.0",
     "typescript": "^4.3.2"
   }

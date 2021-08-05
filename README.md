@@ -60,7 +60,7 @@ interface MBConfig {
 To use `hardhat-multibaas-plugin` with `hardhat`, configure the `networks` and `mbConfig` fields in your `hardhat.config.ts` as follows:
 
 ```typescript
-import "multibaas-hardhat-plugin";
+import "hardhat-multibaas-plugin";
 import { URL } from "url";
 
 module.exports = {
