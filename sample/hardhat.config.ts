@@ -2,7 +2,7 @@
 
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { HardhatUserConfig, task, types } from "hardhat/config";
-import "multibaas-hardhat-plugin";
+import "hardhat-multibaas-plugin";
 import { URL } from "url";
 import { deployGreeterContract, deployMetaCoinContract } from "./deploy";
 

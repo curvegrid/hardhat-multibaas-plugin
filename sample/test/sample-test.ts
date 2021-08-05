@@ -4,7 +4,7 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { assert, expect } from "chai";
 import { Contract } from "ethers";
 import hre from "hardhat";
-import { DeployResult } from "multibaas-hardhat-plugin/lib/type-extensions";
+import { DeployResult } from "hardhat-multibaas-plugin/lib/type-extensions";
 
 describe("Greeter", function () {
   it("Should return the new greeting once it's changed", async function (): Promise<void> {

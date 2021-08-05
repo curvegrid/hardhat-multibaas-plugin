@@ -3,7 +3,7 @@
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { Contract } from "ethers";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
-import { DeployResult } from "multibaas-hardhat-plugin/lib/type-extensions";
+import { DeployResult } from "hardhat-multibaas-plugin/lib/type-extensions";
 
 export async function deployGreeterContract(
   signer: SignerWithAddress,
