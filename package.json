@@ -27,7 +27,8 @@
   "description": "A helper plugin for integrating MultiBaas into Hardhat",
   "author": "Curvegrid",
   "files": [
-    "lib/*.js"
+    "lib/*.js",
+    "lib/*.ts"
   ],
   "license": "MIT",
   "scripts": {
