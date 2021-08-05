@@ -27,7 +27,8 @@
   "description": "A helper plugin for integrating MultiBaas into Hardhat",
   "author": "Curvegrid",
   "files": [
-    "src/"
+    "lib/*.js",
+    "lib/*.ts"
   ],
   "license": "MIT",
   "scripts": {
@@ -39,8 +40,8 @@
   "dependencies": {
     "@nomiclabs/hardhat-ethers": "^2.0.2",
     "axios": "^0.21.1",
-    "ethers": "^5.2.0",
-    "hardhat": "^2.3.0",
+    "ethers": "^5.4.4",
+    "hardhat": "^2.5.0",
     "validator": "^13.5.2"
   },
   "devDependencies": {
