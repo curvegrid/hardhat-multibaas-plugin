@@ -23,6 +23,28 @@ export async function deployGreeterContract(
   );
 }
 
+export async function deployThenLinkGreeterContract(
+  signer: SignerWithAddress,
+  hre: HardhatRuntimeEnvironment
+): Promise<DeployResult> {
+  await hre.mbDeployer.setup();
+
+  const factory = await hre.ethers.getContractFactory("Greeter", signer);
+  const contract = await factory.deploy("Hello, world!");
+  await contract.deployed();
+
+  return hre.mbDeployer.link(
+    signer as SignerWithAddress,
+    "Greeter",
+    contract.address,
+    {
+      addressLabel: "linked_greeter",
+      contractVersion: "1.0",
+      contractLabel: "greeter",
+    }
+  );
+}
+
 export async function deployProxiedGreeterContract(
   signer: SignerWithAddress,
   hre: HardhatRuntimeEnvironment
@@ -65,7 +87,7 @@ export async function deployMetaCoinContract(
     await hre.mbDeployer.deploy(
       {
         signer,
-        // MetaCoint must be linked with ConvertLib before deploying
+        // MetaCoin must be linked with ConvertLib before deploying
         libraries: {
           ConvertLib: convertLibInstance.address,
         },
