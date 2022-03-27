@@ -23,6 +23,24 @@ export async function deployGreeterContract(
   );
 }
 
+export async function deployProxiedGreeterContract(
+  signer: SignerWithAddress,
+  hre: HardhatRuntimeEnvironment
+): Promise<DeployResult> {
+  await hre.mbDeployer.setup();
+
+  return hre.mbDeployer.deployProxy(
+    signer as SignerWithAddress,
+    "ProxiedGreeter",
+    ["Hello, world!"],
+    {
+      addressLabel: "proxied_greeter",
+      contractVersion: "1.0",
+      contractLabel: "proxied_greeter",
+    }
+  );
+}
+
 export async function deployMetaCoinContract(
   signer: SignerWithAddress,
   hre: HardhatRuntimeEnvironment

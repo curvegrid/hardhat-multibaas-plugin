@@ -12,3 +12,6 @@ dist
 
 # env file to run the deployment
 env
+
+# OpenZeppelin proxy files
+.openzeppelin

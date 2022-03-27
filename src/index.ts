@@ -1,6 +1,7 @@
 // Copyright (c) 2021 Curvegrid Inc.
 
 import "@nomiclabs/hardhat-ethers";
+import "@openzeppelin/hardhat-upgrades";
 import { extendConfig, extendEnvironment } from "hardhat/config";
 import { lazyObject } from "hardhat/plugins";
 import { HardhatConfig, HardhatUserConfig } from "hardhat/types";
@@ -9,7 +10,7 @@ import "./type-extensions";
 
 extendEnvironment((hre) => {
   hre.mbDeployer = lazyObject(() => {
-    return new MBDeployer(hre.ethers, hre.config.mbConfig, hre.network.name);
+    return new MBDeployer(hre.ethers, hre.upgrades, hre.config.mbConfig, hre.network.name);
   });
 });
 

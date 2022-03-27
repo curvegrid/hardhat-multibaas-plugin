@@ -108,3 +108,26 @@ describe("Metacoin", function () {
     );
   });
 });
+
+describe("ProxiedGreeter", function () {
+  it("Should return the new greeting once it's changed", async function (): Promise<void> {
+    const { contract, mbContract, mbAddress } = (await hre.run("deployProxy", {
+      contract: "proxied_greeter",
+    })) as DeployResult;
+
+    // MultiBaas deployment tests
+    expect(mbContract.label).to.equal("proxied_greeter");
+    expect(mbContract.contractName).to.equal("ProxiedGreeter");
+    expect(mbAddress.label).to.equal("proxied_greeter");
+    expect(mbAddress.address).to.equal(contract.address);
+    expect(
+      mbAddress.contracts.findIndex(({ label }) => label === "proxied_greeter")
+    ).to.not.equal(-1);
+
+    // Contract method call tests
+    expect(await contract["greet"]()).to.equal("Hello, world!");
+
+    await contract["setGreeting"]("Hola, mundo!");
+    expect(await contract["greet"]()).to.equal("Hola, mundo!");
+  });
+});
