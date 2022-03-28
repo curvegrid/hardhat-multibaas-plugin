@@ -6,6 +6,7 @@ import {
 } from "@nomiclabs/hardhat-ethers/types";
 import axios, { AxiosRequestConfig } from "axios";
 import { ContractFactory, ethers, Signer } from "ethers";
+import { HardhatUpgrades } from "@openzeppelin/hardhat-upgrades";
 import { MBConfig } from "hardhat/types";
 import { URL } from "url";
 import {
@@ -21,9 +22,10 @@ type ethersT = typeof ethers & HardhatEthersHelpers;
 export class MBDeployer implements MBDeployerI {
   constructor(
     private ethers: ethersT,
+    private upgrades: HardhatUpgrades,
     private mbConfig: MBConfig,
     private network: string
-  ) {}
+  ) { }
 
   /**
    * Sets up the Deployer.
@@ -187,6 +189,34 @@ export class MBDeployer implements MBDeployerI {
 
     return mbContract;
   }
+
+  /**
+     * Gets a MultiBaas contract.
+     */
+  private async getMBContract(
+    contractName: string,
+    options: DeployOptions
+  ): Promise<MultiBaasContract> {
+    const contractLabel = options.contractLabel ?? contractName.toLowerCase();
+    if (contractLabel === undefined) throw new Error("Contract has no name");
+
+    if (options.contractVersion !== undefined) {
+      // Try querying the EXACT version
+      const mbContract = (await this.request(
+        `/contracts/${contractLabel}/${options.contractVersion}`
+      )) as MultiBaasContract;
+
+      return mbContract;
+    }
+
+    // Attempt to get a version, by querying the latest version
+    const mbContract = (await this.request(
+      `/contracts/${contractLabel}`
+    )) as MultiBaasContract;
+
+    return mbContract;
+  }
+
   /**
    * Creates a MultiBaas address instance, with labels!
    */
@@ -355,6 +385,108 @@ export class MBDeployer implements MBDeployerI {
 
     const contract = await factory.deploy(...contractArguments);
     await contract.deployed();
+
+    // create a new instance and linked it to the deployed contract on MultiBaas
+    let mbAddress = await this.createMultiBaasAddress(
+      contract.address,
+      mbContract.label,
+      options
+    );
+    mbAddress = await this.linkContractToAddress(mbContract, mbAddress);
+
+    return { contract, mbContract, mbAddress };
+  }
+
+  /**
+   * Deploy a contract and its proxy with `contractName` name using `hardhat-upgrades` plugin.
+   * The contract's compiled bytecode and its ABI are uploaded to MultiBaas.
+   * After a successful deployment, the deployed instance is linked to the corresponding contract on MultiBaas.
+   *
+   * @param signerOrOptions an `ethers.js`'s `Signer` or a `hardhat-ethers`'s `FactoryOptions` used to
+   * get the `ContractFactory` associated with the deploy contract.
+   * @param contractName the deploy contract's name as specified in `contracts/`
+   * @param contractArguments the deploy contract's constructor arguments
+   * @param options an optional `DeployOptions` struct used for uploading
+   * and linking the deploy contract on MultiBaas
+   *
+   * @returns an array consisting of [Contract (`ethers.js`'s `Contract`), MultiBaasContract, MultiBaasAddress] in order
+   */
+  async deployProxy(
+    signerOrOptions: Signer | FactoryOptions,
+    contractName: string,
+    contractArguments: unknown[] = [],
+    options: DeployOptions = {}
+  ): Promise<DeployResult> {
+    const factory = await this.ethers.getContractFactory(
+      contractName,
+      signerOrOptions
+    );
+
+    // after finishing compiling, upload the bytecode and
+    // contract's data to MultiBaas
+    const mbContract = await this.createMBContract(
+      contractName,
+      factory,
+      options
+    );
+
+    if (typeof options.overrides === "object") {
+      console.log(
+        `MultiBaas: Override the default transaction arguments with ${JSON.stringify(
+          options.overrides
+        )}`
+      );
+
+      contractArguments.push(options.overrides);
+    }
+
+    const contract = await this.upgrades.deployProxy(factory, contractArguments);
+    await contract.deployed();
+
+    // create a new instance and linked it to the deployed contract on MultiBaas
+    let mbAddress = await this.createMultiBaasAddress(
+      contract.address,
+      mbContract.label,
+      options
+    );
+    mbAddress = await this.linkContractToAddress(mbContract, mbAddress);
+
+    return { contract, mbContract, mbAddress };
+  }
+
+  /**
+     * Deploy a contract with `contractName` name using `hardhat-ethers` plugin.
+     * The contract's compiled bytecode and its ABI are uploaded to MultiBaas.
+     * After a successful deployment, the deployed instance is linked to the corresponding contract on MultiBaas.
+     *
+     * @param signerOrOptions an `ethers.js`'s `Signer` or a `hardhat-ethers`'s `FactoryOptions` used to
+     * get the `ContractFactory` associated with the deploy contract.
+     * @param contractName the deploy contract's name as specified in `contracts/`
+     * @param contractArguments the deploy contract's constructor arguments
+     * @param options an optional `DeployOptions` struct used for uploading
+     * and linking the deploy contract on MultiBaas
+     *
+     * @returns an array consisting of [Contract (`ethers.js`'s `Contract`), MultiBaasContract, MultiBaasAddress] in order
+     */
+  async link(
+    signerOrOptions: Signer | FactoryOptions,
+    contractName: string,
+    address: string,
+    options: DeployOptions = {}
+  ): Promise<DeployResult> {
+    const factory = await this.ethers.getContractFactory(
+      contractName,
+      signerOrOptions
+    );
+
+    const contract = factory.attach(address);
+
+    // get a contract that has already been compiled and
+    // uploaded to MultiBaas
+    const mbContract = await this.getMBContract(
+      contractName,
+      options
+    );
 
     // create a new instance and linked it to the deployed contract on MultiBaas
     let mbAddress = await this.createMultiBaasAddress(

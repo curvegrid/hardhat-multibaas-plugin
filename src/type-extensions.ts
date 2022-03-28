@@ -34,6 +34,18 @@ export interface MBDeployerI {
     contractArguments?: unknown[],
     options?: DeployOptions
   ) => Promise<DeployResult>;
+  deployProxy: (
+    signerOrOptions: Signer | FactoryOptions,
+    contractName: string,
+    contractArguments?: unknown[],
+    options?: DeployOptions
+  ) => Promise<DeployResult>;
+  link: (
+    signerOrOptions: Signer | FactoryOptions,
+    contractName: string,
+    address: string,
+    options?: DeployOptions
+  ) => Promise<DeployResult>;
   setup: () => Promise<void>;
 }
 

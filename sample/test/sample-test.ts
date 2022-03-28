@@ -27,6 +27,27 @@ describe("Greeter", function () {
     await contract["setGreeting"]("Hola, mundo!");
     expect(await contract["greet"]()).to.equal("Hola, mundo!");
   });
+
+  it("Should operate on a linked Greeter", async function (): Promise<void> {
+    const { contract, mbContract, mbAddress } = (await hre.run("deploy", {
+      contract: "linked_greeter",
+    })) as DeployResult;
+
+    // MultiBaas deployment tests
+    expect(mbContract.label).to.equal("greeter");
+    expect(mbContract.contractName).to.equal("Greeter");
+    expect(mbAddress.label).to.equal("linked_greeter");
+    expect(mbAddress.address).to.equal(contract.address);
+    expect(
+      mbAddress.contracts.findIndex(({ label }) => label === "greeter")
+    ).to.not.equal(-1);
+
+    // Contract method call tests
+    expect(await contract["greet"]()).to.equal("Hello, world!");
+
+    await contract["setGreeting"]("Hola, mundo!");
+    expect(await contract["greet"]()).to.equal("Hola, mundo!");
+  });
 });
 
 // tests based on Metacoin defined in truffle-box
@@ -106,5 +127,28 @@ describe("Metacoin", function () {
       accountTwoStartingBalance + amount,
       "Amount wasn't correctly sent to the receiver"
     );
+  });
+});
+
+describe("ProxiedGreeter", function () {
+  it("Should return the new greeting once it's changed", async function (): Promise<void> {
+    const { contract, mbContract, mbAddress } = (await hre.run("deployProxy", {
+      contract: "proxied_greeter",
+    })) as DeployResult;
+
+    // MultiBaas deployment tests
+    expect(mbContract.label).to.equal("proxied_greeter");
+    expect(mbContract.contractName).to.equal("ProxiedGreeter");
+    expect(mbAddress.label).to.equal("proxied_greeter");
+    expect(mbAddress.address).to.equal(contract.address);
+    expect(
+      mbAddress.contracts.findIndex(({ label }) => label === "proxied_greeter")
+    ).to.not.equal(-1);
+
+    // Contract method call tests
+    expect(await contract["greet"]()).to.equal("Hello, world!");
+
+    await contract["setGreeting"]("Hola, mundo!");
+    expect(await contract["greet"]()).to.equal("Hola, mundo!");
   });
 });
