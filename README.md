@@ -146,6 +146,28 @@ export interface DeployOptions {
 }
 ```
 
+The `deployProxy` function will deploy a proxied smart contract that uses [OpenZeppelin's Hardhat Upgrades plugin](https://docs.openzeppelin.com/upgrades-plugins/1.x/hardhat-upgrades). It automatically deploys the implementation contract, proxy, and admin, as required, and then links the proxy smart contract.
+
+```typescript
+  deployProxy: (
+    signerOrOptions: Signer | FactoryOptions,
+    contractName: string,
+    contractArguments?: unknown[],
+    options?: DeployOptions
+  ) => Promise<DeployResult>;
+```
+
+For contracts that have been deployed outside of `hardhat-multibaas-plugin`, it is possible to simply link them in MultiBaas by calling the `link` function and providing the deployed address.
+
+```typescript
+  link: (
+    signerOrOptions: Signer | FactoryOptions,
+    contractName: string,
+    address: string,
+    options?: DeployOptions
+  ) => Promise<DeployResult>;
+```
+
 ## Copyright
 
 Copyright (c) 2021 Curvegrid Inc.

@@ -4,7 +4,7 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { HardhatUserConfig, task, types } from "hardhat/config";
 import "hardhat-multibaas-plugin";
 import { URL } from "url";
-import { deployGreeterContract, deployProxiedGreeterContract, deployMetaCoinContract } from "./deploy";
+import { deployGreeterContract, deployThenLinkGreeterContract, deployProxiedGreeterContract, deployMetaCoinContract } from "./deploy";
 
 const APIKey = "MB_PLUGIN_API_KEY";
 
@@ -36,6 +36,9 @@ task("deploy", "Deploy sample contracts")
     }
     if (contractName.toLowerCase() === "greeter") {
       return deployGreeterContract(signer, hre);
+    }
+    if (contractName.toLowerCase() === "linked_greeter") {
+      return deployThenLinkGreeterContract(signer, hre);
     }
     throw new Error(`unknown contract: ${contractName}`);
   });
