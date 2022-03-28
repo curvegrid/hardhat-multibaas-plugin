@@ -481,8 +481,8 @@ export class MBDeployer implements MBDeployerI {
 
     const contract = factory.attach(address);
 
-    // after finishing compiling, upload the bytecode and
-    // contract's data to MultiBaas
+    // get a contract that has already been compiled and
+    // uploaded to MultiBaas
     const mbContract = await this.getMBContract(
       contractName,
       options
