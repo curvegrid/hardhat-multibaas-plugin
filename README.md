@@ -143,10 +143,15 @@ export interface DeployOptions {
    * (gasLimit, gasPrice, etc)
    **/
   overrides?: unknown;
+
+  /**
+   * The kind of the proxy. Defaults to 'transparent'.
+   **/
+   proxyKind?: 'uups' | 'transparent' | 'beacon';
 }
 ```
 
-The `deployProxy` function will deploy a proxied smart contract that uses [OpenZeppelin's Hardhat Upgrades plugin](https://docs.openzeppelin.com/upgrades-plugins/1.x/hardhat-upgrades). It automatically deploys the implementation contract, proxy, and admin, as required, and then links the proxy smart contract.
+The `deployProxy` function will deploy a proxied smart contract that uses [OpenZeppelin's Hardhat Upgrades plugin](https://docs.openzeppelin.com/upgrades-plugins/1.x/hardhat-upgrades). It automatically deploys the implementation contract, proxy, and admin, as required, and then links the proxy smart contract. It defaults to a 'transparent' proxy type, but can be overridden.
 
 ```typescript
   deployProxy: (
@@ -154,7 +159,7 @@ The `deployProxy` function will deploy a proxied smart contract that uses [OpenZ
     contractName: string,
     contractArguments?: unknown[],
     options?: DeployOptions
-  ) => Promise<DeployResult>;
+  ) => Promise<DeployProxyResult>;
 ```
 
 For contracts that have been deployed outside of `hardhat-multibaas-plugin`, it is possible to simply link them in MultiBaas by calling the `link` function and providing the deployed address.

@@ -7,9 +7,10 @@ import { URL } from "url";
 import { deployGreeterContract, deployThenLinkGreeterContract, deployProxiedGreeterContract, deployMetaCoinContract } from "./deploy";
 
 const APIKey = "MB_PLUGIN_API_KEY";
+const Mnemonic = "MB_PLUGIN_MNEMONIC";
 
 const apiKey = process.env[APIKey] || "";
-const mnemonic = "a sample, yet simple mnemonic";
+const mnemonic = process.env[Mnemonic] || "";
 
 // create a task to deploy smart contracts defined in `./contracts`
 task("deploy", "Deploy sample contracts")

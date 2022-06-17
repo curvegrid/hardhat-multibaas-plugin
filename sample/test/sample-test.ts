@@ -4,7 +4,7 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { assert, expect } from "chai";
 import { Contract } from "ethers";
 import hre from "hardhat";
-import { DeployResult } from "hardhat-multibaas-plugin/lib/type-extensions";
+import { DeployResult, DeployProxyResult } from "hardhat-multibaas-plugin/lib/type-extensions";
 
 describe("Greeter", function () {
   it("Should return the new greeting once it's changed", async function (): Promise<void> {
@@ -132,9 +132,9 @@ describe("Metacoin", function () {
 
 describe("ProxiedGreeter", function () {
   it("Should return the new greeting once it's changed", async function (): Promise<void> {
-    const { contract, mbContract, mbAddress } = (await hre.run("deployProxy", {
+    const { contract, mbContract, mbAddress, adminAddress, implementationAddress } = (await hre.run("deployProxy", {
       contract: "proxied_greeter",
-    })) as DeployResult;
+    })) as DeployProxyResult;
 
     // MultiBaas deployment tests
     expect(mbContract.label).to.equal("proxied_greeter");
@@ -144,6 +144,8 @@ describe("ProxiedGreeter", function () {
     expect(
       mbAddress.contracts.findIndex(({ label }) => label === "proxied_greeter")
     ).to.not.equal(-1);
+    expect(adminAddress).to.equal(await hre.upgrades.erc1967.getAdminAddress(mbAddress.address));
+    expect(implementationAddress).to.equal(await hre.upgrades.erc1967.getImplementationAddress(mbAddress.address));
 
     // Contract method call tests
     expect(await contract["greet"]()).to.equal("Hello, world!");

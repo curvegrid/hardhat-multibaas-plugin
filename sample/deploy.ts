@@ -3,7 +3,7 @@
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { Contract } from "ethers";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
-import { DeployResult } from "hardhat-multibaas-plugin/lib/type-extensions";
+import { DeployResult, DeployProxyResult } from "hardhat-multibaas-plugin/lib/type-extensions";
 
 export async function deployGreeterContract(
   signer: SignerWithAddress,
@@ -48,7 +48,7 @@ export async function deployThenLinkGreeterContract(
 export async function deployProxiedGreeterContract(
   signer: SignerWithAddress,
   hre: HardhatRuntimeEnvironment
-): Promise<DeployResult> {
+): Promise<DeployProxyResult> {
   await hre.mbDeployer.setup();
 
   return hre.mbDeployer.deployProxy(
