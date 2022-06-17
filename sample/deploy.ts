@@ -99,6 +99,7 @@ export async function deployMetaCoinContract(
         contractVersion: "1.0",
         addressLabel: "metacoin",
         contractLabel: "metacoin",
+        startingBlock: "0"
       }
     )
   ).contract;

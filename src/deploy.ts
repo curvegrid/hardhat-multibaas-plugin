@@ -318,7 +318,8 @@ export class MBDeployer implements MBDeployerI {
    */
   private async linkContractToAddress(
     contract: MultiBaasContract,
-    address: MultiBaasAddress
+    address: MultiBaasAddress,
+    startingBlock: string
   ): Promise<MultiBaasAddress> {
     // First check if the address already has the contract
     for (const c of address.contracts) {
@@ -333,11 +334,35 @@ export class MBDeployer implements MBDeployerI {
       `MultiBaas: Linking contract "${contract.label} ${contract.version}" to address "${address.label}"`
     );
     const mbAddress = (await this.request(
-      `/chains/ethereum/addresses/${address.label}/contracts/${contract.label}/${contract.version}`,
-      { method: "PUT" }
+      `/chains/ethereum/addresses/${address.label}/contracts`,
+      {
+        method: "POST",
+        data: {
+          label: contract.label,
+          version: contract.version,
+          startingBlock: startingBlock,
+        }
+      }
     )) as MultiBaasAddress;
 
     return mbAddress;
+  }
+
+  /**
+   * Normalize an undefined starting block to a sane default of 100 blocks prior to the current one.
+   *
+   * @param startingBlock a starting block to normalize.
+   *
+   * @returns a normalied starting block
+   */
+  private normalizeStartingBlock(
+    startingBlock?: string
+  ): string {
+    if (startingBlock === undefined) {
+      return "-100";
+    }
+
+    return startingBlock;
   }
 
   /**
@@ -386,13 +411,15 @@ export class MBDeployer implements MBDeployerI {
     const contract = await factory.deploy(...contractArguments);
     await contract.deployed();
 
+    const startingBlock = this.normalizeStartingBlock(options.startingBlock);
+
     // create a new instance and linked it to the deployed contract on MultiBaas
     let mbAddress = await this.createMultiBaasAddress(
       contract.address,
       mbContract.label,
       options
     );
-    mbAddress = await this.linkContractToAddress(mbContract, mbAddress);
+    mbAddress = await this.linkContractToAddress(mbContract, mbAddress, startingBlock);
 
     return { contract, mbContract, mbAddress };
   }
@@ -443,13 +470,15 @@ export class MBDeployer implements MBDeployerI {
     const contract = await this.upgrades.deployProxy(factory, contractArguments);
     await contract.deployed();
 
+    const startingBlock = this.normalizeStartingBlock(options.startingBlock);
+
     // create a new instance and linked it to the deployed contract on MultiBaas
     let mbAddress = await this.createMultiBaasAddress(
       contract.address,
       mbContract.label,
       options
     );
-    mbAddress = await this.linkContractToAddress(mbContract, mbAddress);
+    mbAddress = await this.linkContractToAddress(mbContract, mbAddress, startingBlock);
 
     return { contract, mbContract, mbAddress };
   }
@@ -488,13 +517,15 @@ export class MBDeployer implements MBDeployerI {
       options
     );
 
+    const startingBlock = this.normalizeStartingBlock(options.startingBlock);
+
     // create a new instance and linked it to the deployed contract on MultiBaas
     let mbAddress = await this.createMultiBaasAddress(
       contract.address,
       mbContract.label,
       options
     );
-    mbAddress = await this.linkContractToAddress(mbContract, mbAddress);
+    mbAddress = await this.linkContractToAddress(mbContract, mbAddress, startingBlock);
 
     return { contract, mbContract, mbAddress };
   }
