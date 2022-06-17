@@ -117,7 +117,7 @@ export interface DeployResult {
 }
 ```
 
-`DeployOptions` consists of different options that you can specify when deploying a contract using the plugin. It has following fields:
+`DeployOptions` consists of different options that you can specify when deploying a contract using the plugin. It has the following fields:
 
 ```typescript
 export interface DeployOptions {
