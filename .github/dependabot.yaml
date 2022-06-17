@@ -1,0 +1,21 @@
+version: 2
+updates:
+  # Enable version updates for plugin itself
+  - package-ecosystem: "npm"
+    directory: "/" # Location of package manifests
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "07:00"
+      timezone: "Asia/Tokyo"
+    open-pull-requests-limit: 50
+  # Enable version updates for sample
+  - package-ecosystem: "npm"
+    directory: "/sample" # Location of package manifests
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "07:00"
+      timezone: "Asia/Tokyo"
+    open-pull-requests-limit: 50
+    
