@@ -15,7 +15,7 @@ import {
   MultiBaasAPIResponse,
   MultiBaasContract,
 } from "./multibaasApi";
-import { DeployOptions, DeployResult, MBDeployerI } from "./type-extensions";
+import { DeployOptions, DeployResult, DeployProxyResult, MBDeployerI } from "./type-extensions";
 
 type ethersT = typeof ethers & HardhatEthersHelpers;
 
@@ -443,7 +443,7 @@ export class MBDeployer implements MBDeployerI {
     contractName: string,
     contractArguments: unknown[] = [],
     options: DeployOptions = {}
-  ): Promise<DeployResult> {
+  ): Promise<DeployProxyResult> {
     const factory = await this.ethers.getContractFactory(
       contractName,
       signerOrOptions
@@ -467,9 +467,16 @@ export class MBDeployer implements MBDeployerI {
       contractArguments.push(options.overrides);
     }
 
-    const contract = await this.upgrades.deployProxy(factory, contractArguments);
+    // hard default to 'transparent' to avoid any surprises
+    if (options.proxyKind === undefined) {
+      options.proxyKind = 'transparent';
+    }
+
+    const contract = await this.upgrades.deployProxy(factory, contractArguments, { kind: options.proxyKind });
     await contract.deployed();
 
+    const adminAddress = await this.upgrades.erc1967.getAdminAddress(contract.address);
+    const implementationAddress = await this.upgrades.erc1967.getImplementationAddress(contract.address);
     const startingBlock = this.normalizeStartingBlock(options.startingBlock);
 
     // create a new instance and linked it to the deployed contract on MultiBaas
@@ -480,18 +487,16 @@ export class MBDeployer implements MBDeployerI {
     );
     mbAddress = await this.linkContractToAddress(mbContract, mbAddress, startingBlock);
 
-    return { contract, mbContract, mbAddress };
+    return { contract, mbContract, mbAddress, adminAddress, implementationAddress };
   }
 
   /**
-     * Deploy a contract with `contractName` name using `hardhat-ethers` plugin.
-     * The contract's compiled bytecode and its ABI are uploaded to MultiBaas.
-     * After a successful deployment, the deployed instance is linked to the corresponding contract on MultiBaas.
+     * Link a contract with `contractName` name to an address on MultiBaas.
      *
      * @param signerOrOptions an `ethers.js`'s `Signer` or a `hardhat-ethers`'s `FactoryOptions` used to
      * get the `ContractFactory` associated with the deploy contract.
      * @param contractName the deploy contract's name as specified in `contracts/`
-     * @param contractArguments the deploy contract's constructor arguments
+     * @param address the deployed contract's address to link
      * @param options an optional `DeployOptions` struct used for uploading
      * and linking the deploy contract on MultiBaas
      *

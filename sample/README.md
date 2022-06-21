@@ -9,6 +9,7 @@ This sample project assumes that you already have a MultiBaas deployment setup a
 Variable | Description
 ----|----
 `MB_PLUGIN_API_KEY` | MultiBaas API key with Administrator permissions
+`MB_PLUGIN_MNEMONIC` | Private key mnemonic to use with Hardhat for testing
 
 - `hardhat.config.ts` values:
 
@@ -16,7 +17,6 @@ Entity | `/sample` Value | Description
 ----|----|----
 `HardhatUserConfig.networks.development.url` | `http://localhost:8080/web3/${apiKey}` | If using the Curvegrid Test Network, the host part of the URL should match your deployment. If using a 3rd party web3 provider (Infura, etc.), replace the entire URL.
 `HardhatUserConfig.networks.development.chainId` | 25846 | 2017072401 for Curvegrid Test Network, otherwise the appropriate Chain ID for your blockchain
-`mnemonic` | `"a sample, yet simple mnemonic"` | Private key mnemomic for use with Hardhat
 
 URL `http://localhost:8080` will need to be replaced with your particular MultiBaas deployment URL, and your Web3 API key will need to be stored in the `MB_PLUGIN_API_KEY` environment variable.
 

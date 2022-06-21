@@ -20,6 +20,11 @@ export interface DeployResult {
   mbAddress: MultiBaasAddress;
 }
 
+export interface DeployProxyResult extends DeployResult {
+  adminAddress: string;
+  implementationAddress: string;
+}
+
 /**
  * MultiBaas Deployer's interface.
  *
@@ -39,7 +44,7 @@ export interface MBDeployerI {
     contractName: string,
     contractArguments?: unknown[],
     options?: DeployOptions
-  ) => Promise<DeployResult>;
+  ) => Promise<DeployProxyResult>;
   link: (
     signerOrOptions: Signer | FactoryOptions,
     contractName: string,
@@ -75,6 +80,11 @@ export interface DeployOptions {
    * (gasLimit, gasPrice, etc)
    **/
   overrides?: unknown;
+
+  /**
+   * The kind of the proxy. Defaults to 'transparent'.
+   **/
+   proxyKind?: 'uups' | 'transparent' | 'beacon';
 
   /**
    * The block to start syncing the contract from.

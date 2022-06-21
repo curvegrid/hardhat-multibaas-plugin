@@ -117,7 +117,7 @@ export interface DeployResult {
 }
 ```
 
-`DeployOptions` consists of different options that you can specify when deploying a contract using the plugin. It has following fields:
+`DeployOptions` consists of different options that you can specify when deploying a contract using the plugin. It has the following fields:
 
 ```typescript
 export interface DeployOptions {
@@ -145,6 +145,11 @@ export interface DeployOptions {
   overrides?: unknown;
 
   /**
+   * The kind of the proxy. Defaults to 'transparent'.
+   **/
+  proxyKind?: 'uups' | 'transparent' | 'beacon';
+
+  /**
    * The block to start syncing the contract from.
    * 
    * empty string: disable the MultiBaas Event Monitor
@@ -158,7 +163,7 @@ export interface DeployOptions {
 }
 ```
 
-The `deployProxy` function will deploy a proxied smart contract that uses [OpenZeppelin's Hardhat Upgrades plugin](https://docs.openzeppelin.com/upgrades-plugins/1.x/hardhat-upgrades). It automatically deploys the implementation contract, proxy, and admin, as required, and then links the proxy smart contract.
+The `deployProxy` function will deploy a proxied smart contract that uses [OpenZeppelin's Hardhat Upgrades plugin](https://docs.openzeppelin.com/upgrades-plugins/1.x/hardhat-upgrades). It automatically deploys the implementation contract, proxy, and admin, as required, and then links the proxy smart contract. It defaults to a 'transparent' proxy type, but can be overridden.
 
 ```typescript
   deployProxy: (
@@ -166,9 +171,16 @@ The `deployProxy` function will deploy a proxied smart contract that uses [OpenZ
     contractName: string,
     contractArguments?: unknown[],
     options?: DeployOptions
-  ) => Promise<DeployResult>;
+  ) => Promise<DeployProxyResult>;
 ```
 
+in which the `DeployProxyResult` extends the data included in `DeployResult` with the following additional fields:
+
+```typescript
+export interface DeployProxyResult extends DeployResult {
+  adminAddress: string;
+  implementationAddress: string;
+}```
 For contracts that have been deployed outside of `hardhat-multibaas-plugin`, it is possible to simply link them in MultiBaas by calling the `link` function and providing the deployed address.
 
 ```typescript
