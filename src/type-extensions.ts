@@ -78,12 +78,12 @@ export interface DeployOptions {
 
   /**
    * The block to start syncing the contract from.
-   * 
+   *
    * empty string: disable the MultiBaas Event Monitor
    *  0: sync from the first block
    * <0: sync from this number of blocks prior to the current block
    * >0: sync from a specific block number
-   * 
+   *
    * Defaults to -100, or 100 blocks prior to the current block.
    **/
    startingBlock?: string;
