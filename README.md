@@ -162,6 +162,13 @@ The `deployProxy` function will deploy a proxied smart contract that uses [OpenZ
   ) => Promise<DeployProxyResult>;
 ```
 
+in which the `DeployProxyResult` extends the data included in `DeployResult` with the following additional fields:
+
+```typescript
+export interface DeployProxyResult extends DeployResult {
+  adminAddress: string;
+  implementationAddress: string;
+}```
 For contracts that have been deployed outside of `hardhat-multibaas-plugin`, it is possible to simply link them in MultiBaas by calling the `link` function and providing the deployed address.
 
 ```typescript
