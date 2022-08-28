@@ -712,21 +712,21 @@
   resolved "https://registry.yarnpkg.com/@nomiclabs/hardhat-ethers/-/hardhat-ethers-2.0.6.tgz#1c695263d5b46a375dcda48c248c4fba9dfe2fc2"
   integrity sha512-q2Cjp20IB48rEn2NPjR1qxsIQBvFVYW9rFRCFq+bC4RUrn1Ljz3g4wM8uSlgIBZYBi2JMXxmOzFqHraczxq4Ng==
 
-"@openzeppelin/hardhat-upgrades@^1.19.0":
-  version "1.19.0"
-  resolved "https://registry.yarnpkg.com/@openzeppelin/hardhat-upgrades/-/hardhat-upgrades-1.19.0.tgz#8f17210b924eb04c3ea4aa9795c1bb01d8a7dc3f"
-  integrity sha512-351QqDO3nZ96g0BO/bQnaTflix4Nw4ELWC/hZ8PwicsuVxRmxN/GZhxPrs62AOdiQdZ+xweawrVXa5knliRd4A==
+"@openzeppelin/hardhat-upgrades@^1.19.1":
+  version "1.20.0"
+  resolved "https://registry.yarnpkg.com/@openzeppelin/hardhat-upgrades/-/hardhat-upgrades-1.20.0.tgz#fe1bddc4ab591ccf185caf4cfa269a4851b73599"
+  integrity sha512-ign7fc/ZdPe+KAYCB91619o+wlBr7sIEEt1nqLhoXAJ9f0qVuXkwAaTdLB0MTSWH85TzlUUT2fTJp1ZnZ1o4LQ==
   dependencies:
-    "@openzeppelin/upgrades-core" "^1.16.0"
+    "@openzeppelin/upgrades-core" "^1.18.0"
     chalk "^4.1.0"
+    debug "^4.1.1"
     proper-lockfile "^4.1.1"
 
-"@openzeppelin/upgrades-core@^1.16.0":
-  version "1.16.1"
-  resolved "https://registry.yarnpkg.com/@openzeppelin/upgrades-core/-/upgrades-core-1.16.1.tgz#a4c383fc628cc9d37d5a276def99a093c951644b"
-  integrity sha512-+hejbeAfsZWIQL5Ih13gkdm2KO6kbERc1ektzcyb25/OtUwaRjIIHxW++LdC/3Hg5uzThVOzJBfiLdAbgwD+OA==
+"@openzeppelin/upgrades-core@^1.18.0":
+  version "1.18.0"
+  resolved "https://registry.yarnpkg.com/@openzeppelin/upgrades-core/-/upgrades-core-1.18.0.tgz#a5db80d15e6b87d45307ad27314c91807a506c00"
+  integrity sha512-fFp5sscGC876yhq7BU595LG45yky21sZFa6cDJigluUjAyJSPoLwF7GD9bSwQMMo4jC7ii1UJBtLipUxN6PVTA==
   dependencies:
-    bn.js "^5.1.2"
     cbor "^8.0.0"
     chalk "^4.1.0"
     compare-versions "^4.0.0"
@@ -3971,9 +3971,9 @@ type-fest@^0.7.1:
   integrity sha512-Ne2YiiGN8bmrmJJEuTWTLJR32nh/JdL1+PSicowtNb0WFpn59GK8/lfD61bVtzguz7b3PBt74nxpv/Pw5po5Rg==
 
 typescript@^4.2.4, typescript@^4.3.4:
-  version "4.3.5"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.3.5.tgz#4d1c37cc16e893973c45a06886b7113234f119f4"
-  integrity sha512-DqQgihaQ9cUrskJo9kIyW/+g0Vxsk8cDtZ52a3NGh0YNTfpUSArXSohyUGnvbPazEPLu398C0UxmKSOrPumUzA==
+  version "4.8.2"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.8.2.tgz#e3b33d5ccfb5914e4eeab6699cf208adee3fd790"
+  integrity sha512-C0I1UsrrDHo2fYI5oaCGbSejwX4ch+9Y5jTQELvovfmFkK3HHSZJB8MSJcWLmCUBzQBchCrZ9rMRV6GuNrvGtw==
 
 unbox-primitive@^1.0.1:
   version "1.0.1"
