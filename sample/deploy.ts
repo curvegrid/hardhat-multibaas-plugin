@@ -1,6 +1,6 @@
 // Copyright (c) 2021 Curvegrid Inc.
 
-import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
+import { SignerWithAddress } from "@nomicfoundation/hardhat-ethers/signers";
 import { Contract } from "ethers";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { DeployResult, DeployProxyResult } from "hardhat-multibaas-plugin/lib/type-extensions";

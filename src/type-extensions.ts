@@ -1,6 +1,6 @@
 // Copyright (c) 2021 Curvegrid Inc.
 
-import { FactoryOptions } from "@nomiclabs/hardhat-ethers/types";
+import { FactoryOptions } from "@nomicfoundation/hardhat-ethers/types";
 import { Contract, Signer } from "ethers";
 import "hardhat/types/config";
 import "hardhat/types/runtime";
