@@ -1,7 +1,6 @@
 // Copyright (c) 2021 Curvegrid Inc.
 
-import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
-import { Contract } from "ethers";
+import { SignerWithAddress } from "@nomicfoundation/hardhat-ethers/signers";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { DeployResult, DeployProxyResult } from "hardhat-multibaas-plugin/lib/type-extensions";
 
@@ -27,16 +26,20 @@ export async function deployThenLinkGreeterContract(
   signer: SignerWithAddress,
   hre: HardhatRuntimeEnvironment
 ): Promise<DeployResult> {
+  // This function is a demo of how to link a contract if it is already deployed,
+  // or is deployed by the normal Hardhat deployer rather than the MultiBaas deployer.
+  // It assumes that the Greeter contract is already uploaded
+  // to MultiBaas. It will fail with a 404 if the Greeter contract is not found.
   await hre.mbDeployer.setup();
 
   const factory = await hre.ethers.getContractFactory("Greeter", signer);
   const contract = await factory.deploy("Hello, world!");
-  await contract.deployed();
+  await contract.waitForDeployment();
 
   return hre.mbDeployer.link(
     signer as SignerWithAddress,
     "Greeter",
-    contract.address,
+    await contract.getAddress(),
     {
       addressLabel: "linked_greeter",
       contractVersion: "1.0",
@@ -66,7 +69,7 @@ export async function deployProxiedGreeterContract(
 export async function deployMetaCoinContract(
   signer: SignerWithAddress,
   hre: HardhatRuntimeEnvironment
-): Promise<Contract> {
+): Promise<DeployResult> {
   await hre.mbDeployer.setup();
 
   const convertLibInstance = (
@@ -83,13 +86,12 @@ export async function deployMetaCoinContract(
     )
   ).contract;
 
-  const metaCoinInstance = (
-    await hre.mbDeployer.deploy(
+  return hre.mbDeployer.deploy(
       {
         signer,
         // MetaCoin must be linked with ConvertLib before deploying
         libraries: {
-          ConvertLib: convertLibInstance.address,
+          ConvertLib: await convertLibInstance.getAddress(),
         },
       },
       "MetaCoin",
@@ -101,8 +103,5 @@ export async function deployMetaCoinContract(
         contractLabel: "metacoin",
         startingBlock: "0"
       }
-    )
-  ).contract;
-
-  return metaCoinInstance;
+    );
 }

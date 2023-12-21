@@ -3,7 +3,7 @@
 import {
   FactoryOptions,
   HardhatEthersHelpers,
-} from "@nomiclabs/hardhat-ethers/types";
+} from "@nomicfoundation/hardhat-ethers/types";
 import axios, { AxiosRequestConfig } from "axios";
 import { ContractFactory, ethers, Signer } from "ethers";
 import { HardhatUpgrades } from "@openzeppelin/hardhat-upgrades";
@@ -409,18 +409,19 @@ export class MBDeployer implements MBDeployerI {
     }
 
     const contract = await factory.deploy(...contractArguments);
-    await contract.deployed();
+    await contract.waitForDeployment();
 
     const startingBlock = this.normalizeStartingBlock(options.startingBlock);
 
     // create a new instance and linked it to the deployed contract on MultiBaas
     let mbAddress = await this.createMultiBaasAddress(
-      contract.address,
+      await contract.getAddress(),
       mbContract.label,
       options
     );
     mbAddress = await this.linkContractToAddress(mbContract, mbAddress, startingBlock);
 
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     return { contract, mbContract, mbAddress };
   }
 
@@ -473,15 +474,15 @@ export class MBDeployer implements MBDeployerI {
     }
 
     const contract = await this.upgrades.deployProxy(factory, contractArguments, { kind: options.proxyKind });
-    await contract.deployed();
+    await contract.waitForDeployment();
 
-    const adminAddress = await this.upgrades.erc1967.getAdminAddress(contract.address);
-    const implementationAddress = await this.upgrades.erc1967.getImplementationAddress(contract.address);
+    const adminAddress = await this.upgrades.erc1967.getAdminAddress(await contract.getAddress());
+    const implementationAddress = await this.upgrades.erc1967.getImplementationAddress(await contract.getAddress());
     const startingBlock = this.normalizeStartingBlock(options.startingBlock);
 
     // create a new instance and linked it to the deployed contract on MultiBaas
     let mbAddress = await this.createMultiBaasAddress(
-      contract.address,
+      await contract.getAddress(),
       mbContract.label,
       options
     );
@@ -526,12 +527,13 @@ export class MBDeployer implements MBDeployerI {
 
     // create a new instance and linked it to the deployed contract on MultiBaas
     let mbAddress = await this.createMultiBaasAddress(
-      contract.address,
+      await contract.getAddress(),
       mbContract.label,
       options
     );
     mbAddress = await this.linkContractToAddress(mbContract, mbAddress, startingBlock);
 
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     return { contract, mbContract, mbAddress };
   }
 }

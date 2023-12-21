@@ -1,6 +1,6 @@
 // Copyright (c) 2021 Curvegrid Inc.
 
-import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
+import { SignerWithAddress } from "@nomicfoundation/hardhat-ethers/signers";
 import { assert, expect } from "chai";
 import { Contract } from "ethers";
 import hre from "hardhat";
@@ -16,7 +16,7 @@ describe("Greeter", function () {
     expect(mbContract.label).to.equal("greeter");
     expect(mbContract.contractName).to.equal("Greeter");
     expect(mbAddress.label).to.equal("greeter");
-    expect(mbAddress.address).to.equal(contract.address);
+    expect(mbAddress.address).to.equal(await contract.getAddress());
     expect(
       mbAddress.contracts.findIndex(({ label }) => label === "greeter")
     ).to.not.equal(-1);
@@ -37,7 +37,7 @@ describe("Greeter", function () {
     expect(mbContract.label).to.equal("greeter");
     expect(mbContract.contractName).to.equal("Greeter");
     expect(mbAddress.label).to.equal("linked_greeter");
-    expect(mbAddress.address).to.equal(contract.address);
+    expect(mbAddress.address).to.equal(await contract.getAddress());
     expect(
       mbAddress.contracts.findIndex(({ label }) => label === "greeter")
     ).to.not.equal(-1);
@@ -64,9 +64,9 @@ describe("Metacoin", function () {
     account1 = accounts[0] as SignerWithAddress;
     account2 = accounts[1] as SignerWithAddress;
 
-    metaCoinInstance = (await hre.run("deploy", {
+    ({ contract: metaCoinInstance } = (await hre.run("deploy", {
       contract: "metacoin",
-    })) as Contract;
+    })) as DeployResult);
   });
 
   it("should put 10000 MetaCoin in the first account", async (): Promise<void> => {
@@ -76,12 +76,12 @@ describe("Metacoin", function () {
   });
 
   it("should call a function that depends on a linked library", async (): Promise<void> => {
-    const metaCoinBalance = (
+    const metaCoinBalance = Number((
       await metaCoinInstance["getBalance"](account1.address)
-    ).toNumber();
-    const metaCoinEthBalance = (
+    ));
+    const metaCoinEthBalance = Number((
       await metaCoinInstance["getBalanceInEth"](account1.address)
-    ).toNumber();
+    ));
 
     assert.equal(
       metaCoinEthBalance,
@@ -96,12 +96,12 @@ describe("Metacoin", function () {
     const accountTwo = account2.address;
 
     // Get initial balances of first and second account.
-    const accountOneStartingBalance = (
+    const accountOneStartingBalance = Number((
       await metaCoinInstance["getBalance"](accountOne)
-    ).toNumber();
-    const accountTwoStartingBalance = (
+    ));
+    const accountTwoStartingBalance = Number((
       await metaCoinInstance["getBalance"](accountTwo)
-    ).toNumber();
+    ));
 
     // Make transaction from first account to second.
     const amount = 10;
@@ -110,12 +110,12 @@ describe("Metacoin", function () {
     });
 
     // Get balances of first and second account after the transactions.
-    const accountOneEndingBalance = (
+    const accountOneEndingBalance = Number((
       await metaCoinInstance["getBalance"](accountOne)
-    ).toNumber();
-    const accountTwoEndingBalance = (
+    ));
+    const accountTwoEndingBalance = Number((
       await metaCoinInstance["getBalance"](accountTwo)
-    ).toNumber();
+    ));
 
     assert.equal(
       accountOneEndingBalance,
@@ -140,7 +140,7 @@ describe("ProxiedGreeter", function () {
     expect(mbContract.label).to.equal("proxied_greeter");
     expect(mbContract.contractName).to.equal("ProxiedGreeter");
     expect(mbAddress.label).to.equal("proxied_greeter");
-    expect(mbAddress.address).to.equal(contract.address);
+    expect(mbAddress.address).to.equal(await contract.getAddress());
     expect(
       mbAddress.contracts.findIndex(({ label }) => label === "proxied_greeter")
     ).to.not.equal(-1);
