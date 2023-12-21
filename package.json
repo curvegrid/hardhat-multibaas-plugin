@@ -40,10 +40,10 @@
   "dependencies": {
     "@nomicfoundation/hardhat-ethers": "^3.0.5",
     "@openzeppelin/hardhat-upgrades": "^3.0.1",
-    "axios": "^0.26.1",
+    "axios": "^1.6.2",
     "ethers": "^6.9.1",
     "hardhat": "^2.19.3",
-    "validator": "^13.7.0"
+    "validator": "^13.11.0"
   },
   "devDependencies": {
     "@types/node": "^8.10.38",
