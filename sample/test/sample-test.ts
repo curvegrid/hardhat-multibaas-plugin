@@ -1,6 +1,6 @@
 // Copyright (c) 2021 Curvegrid Inc.
 
-import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
+import { SignerWithAddress } from "@nomicfoundation/hardhat-ethers/signers";
 import { assert, expect } from "chai";
 import { Contract } from "ethers";
 import hre from "hardhat";

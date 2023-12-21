@@ -38,11 +38,11 @@
     "format": "yarn prettier \"**/*.{js,ts,md,json,yml}\" --write --ignore-path .gitignore"
   },
   "dependencies": {
-    "@nomiclabs/hardhat-ethers": "^2.0.6",
-    "@openzeppelin/hardhat-upgrades": "^1.19.1",
+    "@nomicfoundation/hardhat-ethers": "^3.0.0",
+    "@openzeppelin/hardhat-upgrades": "^2.4.1",
     "axios": "^0.26.1",
-    "ethers": "^5.6.8",
-    "hardhat": "^2.9.9",
+    "ethers": "^6.4.0",
+    "hardhat": "^2.14.0",
     "validator": "^13.7.0"
   },
   "devDependencies": {
