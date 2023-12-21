@@ -64,9 +64,9 @@ describe("Metacoin", function () {
     account1 = accounts[0] as SignerWithAddress;
     account2 = accounts[1] as SignerWithAddress;
 
-    metaCoinInstance = (await hre.run("deploy", {
+    ({ contract: metaCoinInstance } = (await hre.run("deploy", {
       contract: "metacoin",
-    })) as Contract;
+    })) as DeployResult);
   });
 
   it("should put 10000 MetaCoin in the first account", async (): Promise<void> => {

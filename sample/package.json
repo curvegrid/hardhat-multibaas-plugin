@@ -6,7 +6,8 @@
   "license": "MIT",
   "scripts": {
     "test": "yarn hardhat test",
-    "deploy": "yarn hardhat deploy"
+    "deploy:metacoin": "yarn hardhat deploy --contract metacoin",
+    "deploy:greeter": "yarn hardhat deploy --contract greeter"
   },
   "devDependencies": {
     "@openzeppelin/contracts-upgradeable": "^4.6.0",
@@ -14,6 +15,7 @@
     "@types/mocha": "^8.2.2",
     "@types/node": "^15.6.1",
     "chai": "^4.3.4",
+    "ethers": "^6.9.1",
     "hardhat-multibaas-plugin": "./..",
     "ts-node": "^10.0.0",
     "typescript": "^4.3.2"
