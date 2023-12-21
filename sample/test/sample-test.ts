@@ -76,12 +76,12 @@ describe("Metacoin", function () {
   });
 
   it("should call a function that depends on a linked library", async (): Promise<void> => {
-    const metaCoinBalance = (
+    const metaCoinBalance = Number((
       await metaCoinInstance["getBalance"](account1.address)
-    ).toNumber();
-    const metaCoinEthBalance = (
+    ));
+    const metaCoinEthBalance = Number((
       await metaCoinInstance["getBalanceInEth"](account1.address)
-    ).toNumber();
+    ));
 
     assert.equal(
       metaCoinEthBalance,
@@ -96,12 +96,12 @@ describe("Metacoin", function () {
     const accountTwo = account2.address;
 
     // Get initial balances of first and second account.
-    const accountOneStartingBalance = (
+    const accountOneStartingBalance = Number((
       await metaCoinInstance["getBalance"](accountOne)
-    ).toNumber();
-    const accountTwoStartingBalance = (
+    ));
+    const accountTwoStartingBalance = Number((
       await metaCoinInstance["getBalance"](accountTwo)
-    ).toNumber();
+    ));
 
     // Make transaction from first account to second.
     const amount = 10;
@@ -110,12 +110,12 @@ describe("Metacoin", function () {
     });
 
     // Get balances of first and second account after the transactions.
-    const accountOneEndingBalance = (
+    const accountOneEndingBalance = Number((
       await metaCoinInstance["getBalance"](accountOne)
-    ).toNumber();
-    const accountTwoEndingBalance = (
+    ));
+    const accountTwoEndingBalance = Number((
       await metaCoinInstance["getBalance"](accountTwo)
-    ).toNumber();
+    ));
 
     assert.equal(
       accountOneEndingBalance,
