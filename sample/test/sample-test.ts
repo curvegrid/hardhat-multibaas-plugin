@@ -16,7 +16,7 @@ describe("Greeter", function () {
     expect(mbContract.label).to.equal("greeter");
     expect(mbContract.contractName).to.equal("Greeter");
     expect(mbAddress.label).to.equal("greeter");
-    expect(mbAddress.address).to.equal(contract.address);
+    expect(mbAddress.address).to.equal(await contract.getAddress());
     expect(
       mbAddress.contracts.findIndex(({ label }) => label === "greeter")
     ).to.not.equal(-1);
@@ -37,7 +37,7 @@ describe("Greeter", function () {
     expect(mbContract.label).to.equal("greeter");
     expect(mbContract.contractName).to.equal("Greeter");
     expect(mbAddress.label).to.equal("linked_greeter");
-    expect(mbAddress.address).to.equal(contract.address);
+    expect(mbAddress.address).to.equal(await contract.getAddress());
     expect(
       mbAddress.contracts.findIndex(({ label }) => label === "greeter")
     ).to.not.equal(-1);
@@ -140,7 +140,7 @@ describe("ProxiedGreeter", function () {
     expect(mbContract.label).to.equal("proxied_greeter");
     expect(mbContract.contractName).to.equal("ProxiedGreeter");
     expect(mbAddress.label).to.equal("proxied_greeter");
-    expect(mbAddress.address).to.equal(contract.address);
+    expect(mbAddress.address).to.equal(await contract.getAddress());
     expect(
       mbAddress.contracts.findIndex(({ label }) => label === "proxied_greeter")
     ).to.not.equal(-1);
