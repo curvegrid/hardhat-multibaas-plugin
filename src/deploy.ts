@@ -421,7 +421,7 @@ export class MBDeployer implements MBDeployerI {
     );
     mbAddress = await this.linkContractToAddress(mbContract, mbAddress, startingBlock);
 
-		// @ts-ignore TODO: Ignore types while fixing actual calls
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     return { contract, mbContract, mbAddress };
   }
 
@@ -533,7 +533,7 @@ export class MBDeployer implements MBDeployerI {
     );
     mbAddress = await this.linkContractToAddress(mbContract, mbAddress, startingBlock);
 
-		// @ts-ignore TODO: Ignore types while fixing actual calls
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     return { contract, mbContract, mbAddress };
   }
 }
