@@ -9,8 +9,8 @@ import { deployGreeterContract, deployThenLinkGreeterContract, deployProxiedGree
 const APIKey = "MB_PLUGIN_API_KEY";
 const Mnemonic = "MB_PLUGIN_MNEMONIC";
 
-const apiKey = process.env[APIKey] || "";
-const mnemonic = process.env[Mnemonic] || "";
+const apiKey = process.env["MB_API_KEY"] || APIKey;
+const mnemonic = process.env["MNEMONIC"] || Mnemonic;
 
 // create a task to deploy smart contracts defined in `./contracts`
 task("deploy", "Deploy sample contracts")
@@ -74,7 +74,7 @@ const config: HardhatUserConfig = {
   defaultNetwork: "development",
   networks: {
     development: {
-      url: `http://localhost:8080/web3/${apiKey}`,
+      url: `http://localhost:9090/web3/${apiKey}`,
       chainId: 25846,
       accounts: {
         mnemonic,
@@ -92,7 +92,7 @@ const config: HardhatUserConfig = {
   },
   mbConfig: {
     apiKey,
-    host: new URL("http://localhost:8080"),
+    host: new URL("http://localhost:9090"),
     allowUpdateAddress: ["development"],
     allowUpdateContract: ["development"],
   },
