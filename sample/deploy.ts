@@ -26,6 +26,10 @@ export async function deployThenLinkGreeterContract(
   signer: SignerWithAddress,
   hre: HardhatRuntimeEnvironment
 ): Promise<DeployResult> {
+  // This function is a demo of how to link a contract if it is already deployed,
+  // or is deployed by the normal Hardhat deployer rather than the MultiBaas deployer.
+  // It assumes that the Greeter contract is already uploaded
+  // to MultiBaas. It will fail with a 404 if the Greeter contract is not found.
   await hre.mbDeployer.setup();
 
   const factory = await hre.ethers.getContractFactory("Greeter", signer);
