@@ -9,6 +9,7 @@ updates:
       time: "07:00"
       timezone: "Asia/Tokyo"
     open-pull-requests-limit: 50
+    versioning-strategy: increase
   # Enable version updates for sample
   - package-ecosystem: "npm"
     directory: "/sample" # Location of package manifests
@@ -18,4 +19,4 @@ updates:
       time: "07:00"
       timezone: "Asia/Tokyo"
     open-pull-requests-limit: 50
-    
+    versioning-strategy: increase
