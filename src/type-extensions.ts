@@ -37,19 +37,19 @@ export interface MBDeployerI {
     signerOrOptions: Signer | FactoryOptions,
     contractName: string,
     contractArguments?: unknown[],
-    options?: DeployOptions
+    options?: DeployOptions,
   ) => Promise<DeployResult>;
   deployProxy: (
     signerOrOptions: Signer | FactoryOptions,
     contractName: string,
     contractArguments?: unknown[],
-    options?: DeployOptions
+    options?: DeployOptions,
   ) => Promise<DeployProxyResult>;
   link: (
     signerOrOptions: Signer | FactoryOptions,
     contractName: string,
     address: string,
-    options?: DeployOptions
+    options?: DeployOptions,
   ) => Promise<DeployResult>;
   setup: () => Promise<void>;
 }
@@ -84,7 +84,7 @@ export interface DeployOptions {
   /**
    * The kind of the proxy. Defaults to 'transparent'.
    **/
-   proxyKind?: 'uups' | 'transparent' | 'beacon';
+  proxyKind?: "uups" | "transparent" | "beacon";
 
   /**
    * The block to start syncing the contract from.
@@ -96,7 +96,7 @@ export interface DeployOptions {
    *
    * Defaults to -100, or 100 blocks prior to the current block.
    **/
-   startingBlock?: string;
+  startingBlock?: string;
 }
 
 declare module "hardhat/types/config" {

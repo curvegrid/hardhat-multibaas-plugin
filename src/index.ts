@@ -10,7 +10,12 @@ import "./type-extensions";
 
 extendEnvironment((hre) => {
   hre.mbDeployer = lazyObject(() => {
-    return new MBDeployer(hre.ethers, hre.upgrades, hre.config.mbConfig, hre.network.name);
+    return new MBDeployer(
+      hre.ethers,
+      hre.upgrades,
+      hre.config.mbConfig,
+      hre.network.name,
+    );
   });
 });
 
@@ -20,10 +25,10 @@ extendConfig(
 
     if (mbConfig === undefined) {
       throw new Error(
-        "error when loading user's config: please specify a value for [mbConfig] field"
+        "error when loading user's config: please specify a value for [mbConfig] field",
       );
     }
 
     config.mbConfig = mbConfig;
-  }
+  },
 );

@@ -2,11 +2,14 @@
 
 import { SignerWithAddress } from "@nomicfoundation/hardhat-ethers/signers";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
-import { DeployResult, DeployProxyResult } from "hardhat-multibaas-plugin/lib/type-extensions";
+import {
+  DeployResult,
+  DeployProxyResult,
+} from "hardhat-multibaas-plugin/lib/type-extensions";
 
 export async function deployGreeterContract(
   signer: SignerWithAddress,
-  hre: HardhatRuntimeEnvironment
+  hre: HardhatRuntimeEnvironment,
 ): Promise<DeployResult> {
   await hre.mbDeployer.setup();
 
@@ -18,13 +21,13 @@ export async function deployGreeterContract(
       addressLabel: "greeter",
       contractVersion: "1.0",
       contractLabel: "greeter",
-    }
+    },
   );
 }
 
 export async function deployThenLinkGreeterContract(
   signer: SignerWithAddress,
-  hre: HardhatRuntimeEnvironment
+  hre: HardhatRuntimeEnvironment,
 ): Promise<DeployResult> {
   // This function is a demo of how to link a contract if it is already deployed,
   // or is deployed by the normal Hardhat deployer rather than the MultiBaas deployer.
@@ -44,13 +47,13 @@ export async function deployThenLinkGreeterContract(
       addressLabel: "linked_greeter",
       contractVersion: "1.0",
       contractLabel: "greeter",
-    }
+    },
   );
 }
 
 export async function deployProxiedGreeterContract(
   signer: SignerWithAddress,
-  hre: HardhatRuntimeEnvironment
+  hre: HardhatRuntimeEnvironment,
 ): Promise<DeployProxyResult> {
   await hre.mbDeployer.setup();
 
@@ -62,13 +65,13 @@ export async function deployProxiedGreeterContract(
       addressLabel: "proxied_greeter",
       contractVersion: "1.0",
       contractLabel: "proxied_greeter",
-    }
+    },
   );
 }
 
 export async function deployMetaCoinContract(
   signer: SignerWithAddress,
-  hre: HardhatRuntimeEnvironment
+  hre: HardhatRuntimeEnvironment,
 ): Promise<DeployResult> {
   await hre.mbDeployer.setup();
 
@@ -82,26 +85,26 @@ export async function deployMetaCoinContract(
         contractVersion: "1.0",
         addressLabel: "convertlib",
         contractLabel: "convertlib",
-      }
+      },
     )
   ).contract;
 
   return hre.mbDeployer.deploy(
-      {
-        signer,
-        // MetaCoin must be linked with ConvertLib before deploying
-        libraries: {
-          ConvertLib: await convertLibInstance.getAddress(),
-        },
+    {
+      signer,
+      // MetaCoin must be linked with ConvertLib before deploying
+      libraries: {
+        ConvertLib: await convertLibInstance.getAddress(),
       },
-      "MetaCoin",
-      [],
-      // we don't want to deploy multiple contracts into MultiBaas
-      {
-        contractVersion: "1.0",
-        addressLabel: "metacoin",
-        contractLabel: "metacoin",
-        startingBlock: "0"
-      }
-    );
+    },
+    "MetaCoin",
+    [],
+    // we don't want to deploy multiple contracts into MultiBaas
+    {
+      contractVersion: "1.0",
+      addressLabel: "metacoin",
+      contractLabel: "metacoin",
+      startingBlock: "0",
+    },
+  );
 }
