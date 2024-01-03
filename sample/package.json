@@ -12,7 +12,7 @@
   "devDependencies": {
     "@openzeppelin/contracts-upgradeable": "^4.6.0",
     "@types/chai": "^4.3.4",
-    "@types/mocha": "^8.2.2",
+    "@types/mocha": "^10.0.6",
     "@types/node": "^15.6.1",
     "chai": "^4.3.7",
     "ethers": "^6.9.1",
