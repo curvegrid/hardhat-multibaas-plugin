@@ -4,7 +4,12 @@ import { SignerWithAddress } from "@nomicfoundation/hardhat-ethers/signers";
 import { HardhatUserConfig, task, types } from "hardhat/config";
 import "hardhat-multibaas-plugin";
 import { URL } from "url";
-import { deployGreeterContract, deployThenLinkGreeterContract, deployProxiedGreeterContract, deployMetaCoinContract } from "./deploy";
+import {
+  deployGreeterContract,
+  deployThenLinkGreeterContract,
+  deployProxiedGreeterContract,
+  deployMetaCoinContract,
+} from "./deploy";
 
 const APIKey = "MB_PLUGIN_API_KEY";
 const Mnemonic = "MB_PLUGIN_MNEMONIC";
@@ -19,7 +24,7 @@ task("deploy", "Deploy sample contracts")
     "signerId",
     "The index of the signer in the account list used to deploy contract",
     0,
-    types.int
+    types.int,
   )
   .setAction(async (args, hre) => {
     const contractName = args.contract as string;
@@ -27,7 +32,7 @@ task("deploy", "Deploy sample contracts")
     const signers = await hre.ethers.getSigners();
     if (id >= signers.length) {
       throw new Error(
-        `signerId is ${id} but there are only ${signers.length} signers in total`
+        `signerId is ${id} but there are only ${signers.length} signers in total`,
       );
     }
     const signer = signers[id] as SignerWithAddress;
@@ -51,7 +56,7 @@ task("deployProxy", "Deploy sample proxied contracts")
     "signerId",
     "The index of the signer in the account list used to deploy contract",
     0,
-    types.int
+    types.int,
   )
   .setAction(async (args, hre) => {
     const contractName = args.contract as string;
@@ -59,7 +64,7 @@ task("deployProxy", "Deploy sample proxied contracts")
     const signers = await hre.ethers.getSigners();
     if (id >= signers.length) {
       throw new Error(
-        `signerId is ${id} but there are only ${signers.length} signers in total`
+        `signerId is ${id} but there are only ${signers.length} signers in total`,
       );
     }
     const signer = signers[id] as SignerWithAddress;

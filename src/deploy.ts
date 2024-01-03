@@ -15,7 +15,12 @@ import {
   MultiBaasAPIResponse,
   MultiBaasContract,
 } from "./multibaasApi";
-import { DeployOptions, DeployResult, DeployProxyResult, MBDeployerI } from "./type-extensions";
+import {
+  DeployOptions,
+  DeployResult,
+  DeployProxyResult,
+  MBDeployerI,
+} from "./type-extensions";
 
 type ethersT = typeof ethers & HardhatEthersHelpers;
 
@@ -24,8 +29,8 @@ export class MBDeployer implements MBDeployerI {
     private ethers: ethersT,
     private upgrades: HardhatUpgrades,
     private mbConfig: MBConfig,
-    private network: string
-  ) { }
+    private network: string,
+  ) {}
 
   /**
    * Sets up the Deployer.
@@ -37,8 +42,8 @@ export class MBDeployer implements MBDeployerI {
     } catch (e) {
       throw new Error(
         `MultiBaas authentication failed (check your API key?): ${JSON.stringify(
-          e
-        )}`
+          e,
+        )}`,
       );
     }
   }
@@ -50,7 +55,7 @@ export class MBDeployer implements MBDeployerI {
    */
   private async request(
     path: string,
-    config?: AxiosRequestConfig
+    config?: AxiosRequestConfig,
   ): Promise<unknown> {
     if (path.startsWith("/")) path = path.slice(1);
     path = `/api/v0/${path}`;
@@ -85,7 +90,7 @@ export class MBDeployer implements MBDeployerI {
   private async createMBContract(
     contractName: string,
     contract: ContractFactory,
-    options: DeployOptions
+    options: DeployOptions,
   ): Promise<MultiBaasContract> {
     const contractLabel = options.contractLabel ?? contractName.toLowerCase();
     if (contractLabel === undefined) throw new Error("Contract has no name");
@@ -96,7 +101,7 @@ export class MBDeployer implements MBDeployerI {
       // Try querying the EXACT version
       try {
         const mbContract = (await this.request(
-          `/contracts/${contractLabel}/${options.contractVersion}`
+          `/contracts/${contractLabel}/${options.contractVersion}`,
         )) as MultiBaasContract;
         // two contracts are not the same
         if (mbContract.bin !== bytecode) {
@@ -111,22 +116,22 @@ export class MBDeployer implements MBDeployerI {
               allowUpdateContract.indexOf(this.network) === -1)
           ) {
             throw new Error(
-              `MultiBaas: A different "${mbContract.contractName} ${mbContract.version}" has already been deployed.`
+              `MultiBaas: A different "${mbContract.contractName} ${mbContract.version}" has already been deployed.`,
             );
           }
 
           console.log(
-            `MultiBaas: Delete the old contract with label=${contractLabel} and version=${options.contractVersion} to deploy a new one`
+            `MultiBaas: Delete the old contract with label=${contractLabel} and version=${options.contractVersion} to deploy a new one`,
           );
           await this.request(
             `/contracts/${contractLabel}/${options.contractVersion}`,
             {
               method: "DELETE",
-            }
+            },
           );
         } else {
           console.log(
-            `MultiBaas: Contract "${mbContract.contractName} ${mbContract.version}" already created. Skipping creation.`
+            `MultiBaas: Contract "${mbContract.contractName} ${mbContract.version}" already created. Skipping creation.`,
           );
           return mbContract;
         }
@@ -139,12 +144,12 @@ export class MBDeployer implements MBDeployerI {
       // First attempt to get a version, by querying the latest version
       try {
         const mbContract = (await this.request(
-          `/contracts/${contractLabel}`
+          `/contracts/${contractLabel}`,
         )) as MultiBaasContract;
         // If contracts share the same bytecode, just return
         if (mbContract.bin === bytecode) {
           console.log(
-            `MultiBaas: Contract "${mbContract.contractName} ${mbContract.version}" already created. Skipping creation.`
+            `MultiBaas: Contract "${mbContract.contractName} ${mbContract.version}" already created. Skipping creation.`,
           );
           return mbContract;
         }
@@ -162,7 +167,7 @@ export class MBDeployer implements MBDeployerI {
     }
 
     console.log(
-      `MultiBaas: Creating contract "${contractLabel} ${contractVersion}"`
+      `MultiBaas: Creating contract "${contractLabel} ${contractVersion}"`,
     );
 
     const payload: AxiosRequestConfig = {
@@ -184,18 +189,18 @@ export class MBDeployer implements MBDeployerI {
     // Upload the contract to MultiBaas
     const mbContract = (await this.request(
       `/contracts/${contractLabel}`,
-      payload
+      payload,
     )) as MultiBaasContract;
 
     return mbContract;
   }
 
   /**
-     * Gets a MultiBaas contract.
-     */
+   * Gets a MultiBaas contract.
+   */
   private async getMBContract(
     contractName: string,
-    options: DeployOptions
+    options: DeployOptions,
   ): Promise<MultiBaasContract> {
     const contractLabel = options.contractLabel ?? contractName.toLowerCase();
     if (contractLabel === undefined) throw new Error("Contract has no name");
@@ -203,7 +208,7 @@ export class MBDeployer implements MBDeployerI {
     if (options.contractVersion !== undefined) {
       // Try querying the EXACT version
       const mbContract = (await this.request(
-        `/contracts/${contractLabel}/${options.contractVersion}`
+        `/contracts/${contractLabel}/${options.contractVersion}`,
       )) as MultiBaasContract;
 
       return mbContract;
@@ -211,7 +216,7 @@ export class MBDeployer implements MBDeployerI {
 
     // Attempt to get a version, by querying the latest version
     const mbContract = (await this.request(
-      `/contracts/${contractLabel}`
+      `/contracts/${contractLabel}`,
     )) as MultiBaasContract;
 
     return mbContract;
@@ -223,12 +228,12 @@ export class MBDeployer implements MBDeployerI {
   private async createMultiBaasAddress(
     address: string,
     contractLabel: string,
-    options: DeployOptions
+    options: DeployOptions,
   ): Promise<MultiBaasAddress> {
     // Check for conflicting addresses
     try {
       const mbAddress = (await this.request(
-        `/chains/ethereum/addresses/${address}`
+        `/chains/ethereum/addresses/${address}`,
       )) as MultiBaasAddress;
       if (mbAddress.label !== "") {
         // If an address already exists, and the user set a different address label
@@ -237,11 +242,11 @@ export class MBDeployer implements MBDeployerI {
           options.addressLabel !== mbAddress.label
         ) {
           throw new Error(
-            `MultiBaas: The address ${address} has already been created under a different label "${mbAddress.label}"`
+            `MultiBaas: The address ${address} has already been created under a different label "${mbAddress.label}"`,
           );
         }
         console.log(
-          `MultiBaas: Address ${address} already created as "${mbAddress.label}"`
+          `MultiBaas: Address ${address} already created as "${mbAddress.label}"`,
         );
         return mbAddress;
       }
@@ -256,9 +261,9 @@ export class MBDeployer implements MBDeployerI {
       const similars: Set<string> = new Set(
         (
           (await this.request(
-            `/chains/ethereum/addresses/similarlabels/${contractLabel}`
+            `/chains/ethereum/addresses/similarlabels/${contractLabel}`,
           )) as MultiBaasAddress[]
-        ).map((v) => v.label)
+        ).map((v) => v.label),
       );
       if (!similars.has(contractLabel)) addressLabel = contractLabel;
       else {
@@ -271,7 +276,7 @@ export class MBDeployer implements MBDeployerI {
       // We need to confirm if this address exists.
       try {
         const mbAddress = (await this.request(
-          `/chains/ethereum/addresses/${addressLabel}`
+          `/chains/ethereum/addresses/${addressLabel}`,
         )) as MultiBaasAddress;
         // Ok it does. And it's different.
         // Does the current network support label modifications?
@@ -282,12 +287,12 @@ export class MBDeployer implements MBDeployerI {
             allowUpdateAddress.indexOf(this.network) === -1)
         ) {
           throw new Error(
-            `MultiBaas: Another address ${mbAddress.address} was created under the label "${addressLabel}"`
+            `MultiBaas: Another address ${mbAddress.address} was created under the label "${addressLabel}"`,
           );
         }
         // Modifications allowed. Just... delete it?
         console.log(
-          `MultiBaas: Deleting old address ${mbAddress.address} with same label`
+          `MultiBaas: Deleting old address ${mbAddress.address} with same label`,
         );
         await this.request(`/chains/ethereum/addresses/${addressLabel}`, {
           method: "DELETE",
@@ -300,7 +305,7 @@ export class MBDeployer implements MBDeployerI {
 
     // Create it
     console.log(
-      `MultiBaas: Creating address ${address} with label "${addressLabel}"`
+      `MultiBaas: Creating address ${address} with label "${addressLabel}"`,
     );
     const mbAddress = (await this.request(`/chains/ethereum/addresses`, {
       method: "POST",
@@ -319,19 +324,19 @@ export class MBDeployer implements MBDeployerI {
   private async linkContractToAddress(
     contract: MultiBaasContract,
     address: MultiBaasAddress,
-    startingBlock: string
+    startingBlock: string,
   ): Promise<MultiBaasAddress> {
     // First check if the address already has the contract
     for (const c of address.contracts) {
       if (c.label === contract.label && c.version === contract.version) {
         console.log(
-          `MultiBaas: Contract "${contract.label} ${contract.version}" is already linked to address "${address.label}"`
+          `MultiBaas: Contract "${contract.label} ${contract.version}" is already linked to address "${address.label}"`,
         );
         return address;
       }
     }
     console.log(
-      `MultiBaas: Linking contract "${contract.label} ${contract.version}" to address "${address.label}"`
+      `MultiBaas: Linking contract "${contract.label} ${contract.version}" to address "${address.label}"`,
     );
     const mbAddress = (await this.request(
       `/chains/ethereum/addresses/${address.label}/contracts`,
@@ -341,8 +346,8 @@ export class MBDeployer implements MBDeployerI {
           label: contract.label,
           version: contract.version,
           startingBlock: startingBlock,
-        }
-      }
+        },
+      },
     )) as MultiBaasAddress;
 
     return mbAddress;
@@ -355,9 +360,7 @@ export class MBDeployer implements MBDeployerI {
    *
    * @returns a normalied starting block
    */
-  private normalizeStartingBlock(
-    startingBlock?: string
-  ): string {
+  private normalizeStartingBlock(startingBlock?: string): string {
     if (startingBlock === undefined) {
       return "-100";
     }
@@ -383,11 +386,11 @@ export class MBDeployer implements MBDeployerI {
     signerOrOptions: Signer | FactoryOptions,
     contractName: string,
     contractArguments: unknown[] = [],
-    options: DeployOptions = {}
+    options: DeployOptions = {},
   ): Promise<DeployResult> {
     const factory = await this.ethers.getContractFactory(
       contractName,
-      signerOrOptions
+      signerOrOptions,
     );
 
     // after finishing compiling, upload the bytecode and
@@ -395,14 +398,14 @@ export class MBDeployer implements MBDeployerI {
     const mbContract = await this.createMBContract(
       contractName,
       factory,
-      options
+      options,
     );
 
     if (typeof options.overrides === "object") {
       console.log(
         `MultiBaas: Override the default transaction arguments with ${JSON.stringify(
-          options.overrides
-        )}`
+          options.overrides,
+        )}`,
       );
 
       contractArguments.push(options.overrides);
@@ -417,9 +420,13 @@ export class MBDeployer implements MBDeployerI {
     let mbAddress = await this.createMultiBaasAddress(
       await contract.getAddress(),
       mbContract.label,
-      options
+      options,
     );
-    mbAddress = await this.linkContractToAddress(mbContract, mbAddress, startingBlock);
+    mbAddress = await this.linkContractToAddress(
+      mbContract,
+      mbAddress,
+      startingBlock,
+    );
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     return { contract, mbContract, mbAddress };
@@ -443,11 +450,11 @@ export class MBDeployer implements MBDeployerI {
     signerOrOptions: Signer | FactoryOptions,
     contractName: string,
     contractArguments: unknown[] = [],
-    options: DeployOptions = {}
+    options: DeployOptions = {},
   ): Promise<DeployProxyResult> {
     const factory = await this.ethers.getContractFactory(
       contractName,
-      signerOrOptions
+      signerOrOptions,
     );
 
     // after finishing compiling, upload the bytecode and
@@ -455,14 +462,14 @@ export class MBDeployer implements MBDeployerI {
     const mbContract = await this.createMBContract(
       contractName,
       factory,
-      options
+      options,
     );
 
     if (typeof options.overrides === "object") {
       console.log(
         `MultiBaas: Override the default transaction arguments with ${JSON.stringify(
-          options.overrides
-        )}`
+          options.overrides,
+        )}`,
       );
 
       contractArguments.push(options.overrides);
@@ -470,58 +477,74 @@ export class MBDeployer implements MBDeployerI {
 
     // hard default to 'transparent' to avoid any surprises
     if (options.proxyKind === undefined) {
-      options.proxyKind = 'transparent';
+      options.proxyKind = "transparent";
     }
 
-    const contract = await this.upgrades.deployProxy(factory, contractArguments, { kind: options.proxyKind });
+    const contract = await this.upgrades.deployProxy(
+      factory,
+      contractArguments,
+      { kind: options.proxyKind },
+    );
     await contract.waitForDeployment();
 
-    const adminAddress = await this.upgrades.erc1967.getAdminAddress(await contract.getAddress());
-    const implementationAddress = await this.upgrades.erc1967.getImplementationAddress(await contract.getAddress());
+    const adminAddress = await this.upgrades.erc1967.getAdminAddress(
+      await contract.getAddress(),
+    );
+    const implementationAddress =
+      await this.upgrades.erc1967.getImplementationAddress(
+        await contract.getAddress(),
+      );
     const startingBlock = this.normalizeStartingBlock(options.startingBlock);
 
     // create a new instance and linked it to the deployed contract on MultiBaas
     let mbAddress = await this.createMultiBaasAddress(
       await contract.getAddress(),
       mbContract.label,
-      options
+      options,
     );
-    mbAddress = await this.linkContractToAddress(mbContract, mbAddress, startingBlock);
+    mbAddress = await this.linkContractToAddress(
+      mbContract,
+      mbAddress,
+      startingBlock,
+    );
 
-    return { contract, mbContract, mbAddress, adminAddress, implementationAddress };
+    return {
+      contract,
+      mbContract,
+      mbAddress,
+      adminAddress,
+      implementationAddress,
+    };
   }
 
   /**
-     * Link a contract with `contractName` name to an address on MultiBaas.
-     *
-     * @param signerOrOptions an `ethers.js`'s `Signer` or a `hardhat-ethers`'s `FactoryOptions` used to
-     * get the `ContractFactory` associated with the deploy contract.
-     * @param contractName the deploy contract's name as specified in `contracts/`
-     * @param address the deployed contract's address to link
-     * @param options an optional `DeployOptions` struct used for uploading
-     * and linking the deploy contract on MultiBaas
-     *
-     * @returns an array consisting of [Contract (`ethers.js`'s `Contract`), MultiBaasContract, MultiBaasAddress] in order
-     */
+   * Link a contract with `contractName` name to an address on MultiBaas.
+   *
+   * @param signerOrOptions an `ethers.js`'s `Signer` or a `hardhat-ethers`'s `FactoryOptions` used to
+   * get the `ContractFactory` associated with the deploy contract.
+   * @param contractName the deploy contract's name as specified in `contracts/`
+   * @param address the deployed contract's address to link
+   * @param options an optional `DeployOptions` struct used for uploading
+   * and linking the deploy contract on MultiBaas
+   *
+   * @returns an array consisting of [Contract (`ethers.js`'s `Contract`), MultiBaasContract, MultiBaasAddress] in order
+   */
   async link(
     signerOrOptions: Signer | FactoryOptions,
     contractName: string,
     address: string,
-    options: DeployOptions = {}
+    options: DeployOptions = {},
   ): Promise<DeployResult> {
     const factory = await this.ethers.getContractFactory(
       contractName,
-      signerOrOptions
+      signerOrOptions,
     );
 
     const contract = factory.attach(address);
 
     // get a contract that has already been compiled and
     // uploaded to MultiBaas
-    const mbContract = await this.getMBContract(
-      contractName,
-      options
-    );
+    const mbContract = await this.getMBContract(contractName, options);
 
     const startingBlock = this.normalizeStartingBlock(options.startingBlock);
 
@@ -529,9 +552,13 @@ export class MBDeployer implements MBDeployerI {
     let mbAddress = await this.createMultiBaasAddress(
       await contract.getAddress(),
       mbContract.label,
-      options
+      options,
     );
-    mbAddress = await this.linkContractToAddress(mbContract, mbAddress, startingBlock);
+    mbAddress = await this.linkContractToAddress(
+      mbContract,
+      mbAddress,
+      startingBlock,
+    );
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     return { contract, mbContract, mbAddress };

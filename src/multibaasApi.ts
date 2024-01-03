@@ -13,9 +13,12 @@ export interface MultiBaasAPIResponse {
  * A special MultiBaas API error.
  */
 export class MultiBaasAPIError extends Error {
-  constructor(path: string, public response: MultiBaasAPIResponse) {
+  constructor(
+    path: string,
+    public response: MultiBaasAPIResponse,
+  ) {
     super(
-      `An error was returned from the MultiBaas API while calling "${path}": [${response.status}] ${response.message}`
+      `An error was returned from the MultiBaas API while calling "${path}": [${response.status}] ${response.message}`,
     );
   }
 }

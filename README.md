@@ -91,13 +91,13 @@ See the [sample folder](./sample) for a complete **Geting Started** guide with `
 The plugin uses a single `deploy` function to upload a smart contract's artifact, deploy then link the contract on MultiBaas:
 
 ```typescript
-  deploy: (
-    // A `ethers.js` Signer or a `hardhat-ethers` FactoryOptions
-    signerOrOptions: Signer | FactoryOptions,
-    contractName: string,
-    contractArguments?: unknown[],
-    options?: DeployOptions
-  ) => Promise<DeployResult>;
+deploy: (
+  // A `ethers.js` Signer or a `hardhat-ethers` FactoryOptions
+  signerOrOptions: Signer | FactoryOptions,
+  contractName: string,
+  contractArguments?: unknown[],
+  options?: DeployOptions,
+) => Promise<DeployResult>;
 ```
 
 in which `DeployResult` is the data returned from a successful deployment using the plugin. It has the following fields:
@@ -147,31 +147,31 @@ export interface DeployOptions {
   /**
    * The kind of the proxy. Defaults to 'transparent'.
    **/
-  proxyKind?: 'uups' | 'transparent' | 'beacon';
+  proxyKind?: "uups" | "transparent" | "beacon";
 
   /**
    * The block to start syncing the contract from.
-   * 
+   *
    * empty string: disable the MultiBaas Event Monitor
    *  0: sync from the first block
    * <0: sync from this number of blocks prior to the current block
    * >0: sync from a specific block number
-   * 
+   *
    * Defaults to -100, or 100 blocks prior to the current block.
    **/
-   startingBlock?: string;
+  startingBlock?: string;
 }
 ```
 
 The `deployProxy` function will deploy a proxied smart contract that uses [OpenZeppelin's Hardhat Upgrades plugin](https://docs.openzeppelin.com/upgrades-plugins/1.x/hardhat-upgrades). It automatically deploys the implementation contract, proxy, and admin, as required, and then links the proxy smart contract. It defaults to a 'transparent' proxy type, but can be overridden.
 
 ```typescript
-  deployProxy: (
-    signerOrOptions: Signer | FactoryOptions,
-    contractName: string,
-    contractArguments?: unknown[],
-    options?: DeployOptions
-  ) => Promise<DeployProxyResult>;
+deployProxy: (
+  signerOrOptions: Signer | FactoryOptions,
+  contractName: string,
+  contractArguments?: unknown[],
+  options?: DeployOptions,
+) => Promise<DeployProxyResult>;
 ```
 
 in which the `DeployProxyResult` extends the data included in `DeployResult` with the following additional fields:
@@ -186,12 +186,12 @@ export interface DeployProxyResult extends DeployResult {
 For contracts that have been deployed outside of `hardhat-multibaas-plugin`, it is possible to simply link them in MultiBaas by calling the `link` function and providing the deployed address.
 
 ```typescript
-  link: (
-    signerOrOptions: Signer | FactoryOptions,
-    contractName: string,
-    address: string,
-    options?: DeployOptions
-  ) => Promise<DeployResult>;
+link: (
+  signerOrOptions: Signer | FactoryOptions,
+  contractName: string,
+  address: string,
+  options?: DeployOptions,
+) => Promise<DeployResult>;
 ```
 
 ## Copyright
