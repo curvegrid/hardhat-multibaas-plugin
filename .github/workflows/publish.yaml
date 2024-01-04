@@ -20,6 +20,8 @@ jobs:
       with:
         node-version: "${{ env.NODE_VER }}"
         registry-url: https://registry.npmjs.org/
+    - name: Install Deps
+      run: yarn install
     - name: Build
       run: yarn build
     - name: Publish
