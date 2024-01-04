@@ -1,8 +1,11 @@
 name: Publish
 
 on:
-  release:
-    types: [published]
+  # release:
+  #   types: [published]
+  push:
+    branches:
+      - testb
 
 env:
   NODE_VER: "18"
@@ -20,6 +23,7 @@ jobs:
       with:
         node-version: "${{ env.NODE_VER }}"
         registry-url: https://registry.npmjs.org/
+        always-auth: false
     - name: Install Deps
       run: yarn install
     - name: Build
