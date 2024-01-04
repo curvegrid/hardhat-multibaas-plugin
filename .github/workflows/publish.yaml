@@ -22,8 +22,8 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: "${{ env.NODE_VER }}"
-        registry-url: https://registry.npmjs.org/
-        always-auth: false
+        # registry-url: https://registry.npmjs.org/
+        # always-auth: false
     - name: Install Deps
       run: yarn install
     - name: Build
