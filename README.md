@@ -50,7 +50,7 @@ To configure `hardhat-multibaas-plugin`, you need to define a `MBConfig` configu
  * if there exists a contract on MultiBaas with the same (label, version) but
  * different bytecode. */
 interface MBConfig {
-  host: URL;
+  host: string;
   apiKey: string;
   allowUpdateAddress: string[];
   allowUpdateContract: string[];
@@ -61,7 +61,6 @@ To use `hardhat-multibaas-plugin` with `hardhat`, configure the `networks` and `
 
 ```typescript
 import "hardhat-multibaas-plugin";
-import { URL } from "url";
 
 module.exports = {
   defaultNetwork: "development",
@@ -74,7 +73,7 @@ module.exports = {
   },
   mbConfig: {
     apiKey: "<YOUR API KEY>",
-    host: new URL("<YOUR MULTIBAAS DEPLOYMENT URL>"),
+    host: "<YOUR MULTIBAAS DEPLOYMENT URL>",
     allowUpdateAddress: ["development"],
     allowUpdateContract: ["development"],
   },

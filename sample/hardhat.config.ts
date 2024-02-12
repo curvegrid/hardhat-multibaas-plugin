@@ -3,7 +3,6 @@
 import { SignerWithAddress } from "@nomicfoundation/hardhat-ethers/signers";
 import { HardhatUserConfig, task, types } from "hardhat/config";
 import "hardhat-multibaas-plugin";
-import { URL } from "url";
 import {
   deployGreeterContract,
   deployThenLinkGreeterContract,
@@ -97,7 +96,7 @@ const config: HardhatUserConfig = {
   },
   mbConfig: {
     apiKey,
-    host: new URL("http://localhost:9090"),
+    host: "http://localhost:9090",
     allowUpdateAddress: ["development"],
     allowUpdateContract: ["development"],
   },
