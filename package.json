@@ -40,7 +40,7 @@
   "dependencies": {
     "@nomicfoundation/hardhat-ethers": "^3.0.5",
     "@openzeppelin/hardhat-upgrades": "^3.0.1",
-    "axios": "^1.6.5",
+    "axios": "^1.6.7",
     "ethers": "^6.9.2",
     "hardhat": "^2.19.4",
     "validator": "^13.11.0"
