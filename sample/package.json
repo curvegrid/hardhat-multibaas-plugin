@@ -6,8 +6,10 @@
   "license": "MIT",
   "scripts": {
     "test": "npx hardhat test",
-    "deploy:metacoin": "HARDHAT_NETWORK=development npx hardhat deploy --contract metacoin",
-    "deploy:greeter": "HARDHAT_NETWORK=development npx hardhat deploy --contract greeter"
+    "deploy:metacoin": "HARDHAT_NETWORK=development npx hardhat run scripts/deploy-metacoin.ts",
+    "deploy:greeter": "HARDHAT_NETWORK=development npx hardhat run scripts/deploy-greeter.ts",
+    "deploy:link:greeter": "HARDHAT_NETWORK=development npx hardhat run scripts/deploy-then-link-greeter.ts",
+    "deploy:proxy:greeter": "HARDHAT_NETWORK=development npx hardhat run scripts/deploy-proxied-greeter.ts"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^4.0.0",

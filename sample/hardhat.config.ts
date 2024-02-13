@@ -1,15 +1,8 @@
 // Copyright (c) 2021 Curvegrid Inc.
 
 import "@nomicfoundation/hardhat-toolbox";
-import { SignerWithAddress } from "@nomicfoundation/hardhat-ethers/signers";
-import { HardhatUserConfig, task, types } from "hardhat/config";
+import { HardhatUserConfig } from "hardhat/config";
 import "hardhat-multibaas-plugin";
-import {
-  deployGreeterContract,
-  deployThenLinkGreeterContract,
-  deployProxiedGreeterContract,
-  deployMetaCoinContract,
-} from "./deploy";
 import path from 'node:path';
 
 // Retrieve and process the config file
@@ -23,64 +16,6 @@ const {
     adminApiKey
   }
 } = require(CONFIG_FILE);
-
-// create a task to deploy smart contracts defined in `./contracts`
-task("deploy", "Deploy sample contracts")
-  .addParam("contract", "The deploy contract's name")
-  .addOptionalParam(
-    "signerId",
-    "The index of the signer in the account list used to deploy contract",
-    0,
-    types.int,
-  )
-  .setAction(async (args, hre) => {
-    const contractName = args.contract as string;
-    let id = args.signer_id;
-    const signers = await hre.ethers.getSigners();
-    if (id >= signers.length) {
-      throw new Error(
-        `signerId is ${id} but there are only ${signers.length} signers in total`,
-      );
-    }
-    const signer = signers[id] as SignerWithAddress;
-
-    if (contractName.toLowerCase() === "metacoin") {
-      return deployMetaCoinContract(signer, hre);
-    }
-    if (contractName.toLowerCase() === "greeter") {
-      return deployGreeterContract(signer, hre);
-    }
-    if (contractName.toLowerCase() === "linked_greeter") {
-      return deployThenLinkGreeterContract(signer, hre);
-    }
-    throw new Error(`unknown contract: ${contractName}`);
-  });
-
-// create a task to deploy proxied smart contracts defined in `./contracts`
-task("deployProxy", "Deploy sample proxied contracts")
-  .addParam("contract", "The deploy contract's name")
-  .addOptionalParam(
-    "signerId",
-    "The index of the signer in the account list used to deploy contract",
-    0,
-    types.int,
-  )
-  .setAction(async (args, hre) => {
-    const contractName = args.contract as string;
-    let id = args.signer_id;
-    const signers = await hre.ethers.getSigners();
-    if (id >= signers.length) {
-      throw new Error(
-        `signerId is ${id} but there are only ${signers.length} signers in total`,
-      );
-    }
-    const signer = signers[id] as SignerWithAddress;
-
-    if (contractName.toLowerCase() === "proxied_greeter") {
-      return deployProxiedGreeterContract(signer, hre);
-    }
-    throw new Error(`unknown contract: ${contractName}`);
-  });
 
 const config: HardhatUserConfig = {
   defaultNetwork: "development",
