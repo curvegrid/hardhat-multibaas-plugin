@@ -15,3 +15,7 @@ env
 
 # OpenZeppelin proxy files
 .openzeppelin
+
+# Config files
+deployment-config.*.js
+!deployment-config.template.js

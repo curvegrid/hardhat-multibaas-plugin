@@ -10,12 +10,19 @@ import {
   deployProxiedGreeterContract,
   deployMetaCoinContract,
 } from "./deploy";
+import path from 'node:path';
 
-const APIKey = "MB_PLUGIN_API_KEY";
-const Mnemonic = "MB_PLUGIN_MNEMONIC";
-
-const apiKey = process.env["MB_API_KEY"] || APIKey;
-const mnemonic = process.env["MNEMONIC"] || Mnemonic;
+// Retrieve and process the config file
+const CONFIG_FILE = path.join(__dirname, `./deployment-config.${process.env.HARDHAT_NETWORK || 'development'}`);
+const {
+  deploymentConfig: {
+    deploymentEndpoint,
+    ethChainID,
+    deployerPrivateKey,
+    web3Key,
+    adminApiKey
+  }
+} = require(CONFIG_FILE);
 
 // create a task to deploy smart contracts defined in `./contracts`
 task("deploy", "Deploy sample contracts")
@@ -79,11 +86,9 @@ const config: HardhatUserConfig = {
   defaultNetwork: "development",
   networks: {
     development: {
-      url: `http://localhost:9090/web3/${apiKey}`,
-      chainId: 25846,
-      accounts: {
-        mnemonic,
-      },
+      url: `${deploymentEndpoint}/web3/${web3Key}`,
+      chainId: ethChainID,
+      accounts: [ deployerPrivateKey ],
     },
   },
   paths: {
@@ -96,8 +101,8 @@ const config: HardhatUserConfig = {
     timeout: 20000,
   },
   mbConfig: {
-    apiKey,
-    host: new URL("http://localhost:9090"),
+    apiKey: adminApiKey,
+    host: new URL(deploymentEndpoint),
     allowUpdateAddress: ["development"],
     allowUpdateContract: ["development"],
   },

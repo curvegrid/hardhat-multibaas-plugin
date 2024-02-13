@@ -6,8 +6,9 @@
   "license": "MIT",
   "scripts": {
     "test": "yarn hardhat test",
-    "deploy:metacoin": "yarn hardhat deploy --contract metacoin",
-    "deploy:greeter": "yarn hardhat deploy --contract greeter"
+    "reload": "cd .. && yarn build && cd sample && rm yarn.lock && rm -rf node_modules && yarn install",
+    "deploy:metacoin": "HARDHAT_NETWORK=development yarn hardhat deploy --contract metacoin",
+    "deploy:greeter": "HARDHAT_NETWORK=development yarn hardhat deploy --contract greeter"
   },
   "devDependencies": {
     "@openzeppelin/contracts-upgradeable": "^4.9.5",
