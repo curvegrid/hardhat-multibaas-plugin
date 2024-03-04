@@ -4,10 +4,10 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "hardhat/console.sol";
 
-/// @custom:oz-upgrades-unsafe-allow state-variable-immutable
 contract ProxiedGreeter is Initializable {
     string greeting;
 
+    /// @custom:oz-upgrades-unsafe-allow state-variable-immutable
     address immutable ORIGINAL_DEPLOYER;
 
     /// @custom:oz-upgrades-unsafe-allow constructor
