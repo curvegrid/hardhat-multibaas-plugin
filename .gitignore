@@ -7,6 +7,10 @@ dist
 *cache
 *artifacts
 
+# TypeChain files
+*typechain
+*typechain-types
+
 # log/debug files
 *log
 
