@@ -11,6 +11,10 @@ dist
 *typechain
 *typechain-types
 
+# Coverage files
+*coverage
+coverage.json
+
 # log/debug files
 *log
 
