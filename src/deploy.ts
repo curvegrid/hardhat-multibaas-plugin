@@ -483,7 +483,10 @@ export class MBDeployer implements MBDeployerI {
     const contract = await this.upgrades.deployProxy(
       factory,
       contractArguments,
-      { kind: options.proxyKind },
+      {
+        kind: options.proxyKind,
+        constructorArgs: options.constructorArgs
+      },
     );
     await contract.waitForDeployment();
 
