@@ -15,6 +15,7 @@ async function main() {
       addressLabel: "proxied_greeter",
       contractVersion: "1.0",
       contractLabel: "proxied_greeter",
+      constructorArgs: [signer?.address],
     },
   );
 }
