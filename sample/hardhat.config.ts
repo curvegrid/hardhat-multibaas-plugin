@@ -1,6 +1,7 @@
 import { HardhatUserConfig } from 'hardhat/config';
 import '@nomicfoundation/hardhat-toolbox';
 import 'hardhat-multibaas-plugin';
+import '@openzeppelin/hardhat-upgrades';
 import path from 'path';
 
 let deployerPrivateKey = '0x0000000000000000000000000000000000000000000000000000000000000000';
