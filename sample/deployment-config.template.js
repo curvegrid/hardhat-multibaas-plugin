@@ -3,7 +3,7 @@ const deploymentConfig = {
   deployerPrivateKey: '0x0000000000000000000000000000000000000000000000000000000000000000',
 
   // Full URL such as https://abc123.multibaas.com
-  deploymentEndpoint: 'http://localhost:8080',
+  deploymentEndpoint: 'http://127.0.0.1:8080',
 
   // The chain ID of the blockchain network
   // For example: Curvegrid test network = 2017072401, Ethereum Mainnet = 1, BSC Testnet = 97, BSC Mainnet = 56
