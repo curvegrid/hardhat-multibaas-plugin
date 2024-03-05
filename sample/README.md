@@ -33,6 +33,8 @@ cd ..
 yarn install && yarn build
 ```
 
-After that, go to the `sample` folder, then run `yarn install` to install dependencies.
+After that, go to the `sample` folder, then run `npm install` to install dependencies.
 
-You can run either `yarn test` to test the project using tests defined in `tests` folder or `yarn deploy --contract [contract_name]` to deploy a smart contract defined in the [contract folder](./contracts) to MultiBaas. At least two accounts are required to successfully complete the tests.
+The reason we use `npm` for the sample project is it allows us to use the peer dependencies of `@nomicfoundation/hardhat-toolbox` without having to explicitly add them to the `package.json`.
+
+You can run either `npm run test` to test the project using tests defined in `tests` folder or `npm run deploy:` to execute the target script to deploy a smart contract defined in the [contract folder](./contracts) to MultiBaas. At least two accounts are required to successfully complete the tests.
