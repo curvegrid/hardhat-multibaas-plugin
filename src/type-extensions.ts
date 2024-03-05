@@ -96,6 +96,11 @@ export interface DeployOptions {
    * Defaults to -100, or 100 blocks prior to the current block.
    **/
   startingBlock?: string;
+
+  /**
+   * Parameters to pass to the constructor when deploying an upgradeable contract.
+   **/
+  constructorArgs?: unknown[];
 }
 
 declare module "hardhat/types/config" {

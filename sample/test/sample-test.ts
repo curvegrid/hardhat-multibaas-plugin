@@ -88,8 +88,9 @@ describe("Metacoin", function () {
 
 describe("ProxiedGreeter", function () {
   async function deployProxiedGreeterFixture() {
+    const signers = await hre.ethers.getSigners();
     const ProxiedGreeter = await hre.ethers.getContractFactory('ProxiedGreeter');
-    const proxiedGreeter = await hre.upgrades.deployProxy(ProxiedGreeter, ["Hello, world!"]);
+    const proxiedGreeter = await hre.upgrades.deployProxy(ProxiedGreeter, ["Hello, world!"], { constructorArgs: [signers[0]?.address] });
 
     return { proxiedGreeter };
   }
