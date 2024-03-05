@@ -5,19 +5,17 @@
   "author": "Curvegrid",
   "license": "MIT",
   "scripts": {
-    "test": "yarn hardhat test",
-    "deploy:metacoin": "yarn hardhat deploy --contract metacoin",
-    "deploy:greeter": "yarn hardhat deploy --contract greeter"
+    "test": "npx hardhat test",
+    "deploy:metacoin": "HARDHAT_NETWORK=development npx hardhat run scripts/deploy-metacoin.ts",
+    "deploy:greeter": "HARDHAT_NETWORK=development npx hardhat run scripts/deploy-greeter.ts",
+    "deploy:link:greeter": "HARDHAT_NETWORK=development npx hardhat run scripts/deploy-then-link-greeter.ts",
+    "deploy:proxy:greeter": "HARDHAT_NETWORK=development npx hardhat run scripts/deploy-proxied-greeter.ts"
   },
   "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^4.0.0",
     "@openzeppelin/contracts-upgradeable": "^4.9.5",
-    "@types/chai": "^4.3.11",
-    "@types/mocha": "^10.0.6",
-    "@types/node": "^20.10.6",
-    "chai": "^4.3.10",
-    "ethers": "^6.9.2",
-    "hardhat-multibaas-plugin": "./..",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.3.3"
+    "@openzeppelin/hardhat-upgrades": "^3.0.4",
+    "hardhat": "^2.20.1",
+    "hardhat-multibaas-plugin": "./.."
   }
 }

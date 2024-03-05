@@ -7,6 +7,14 @@ dist
 *cache
 *artifacts
 
+# TypeChain files
+*typechain
+*typechain-types
+
+# Coverage files
+*coverage
+coverage.json
+
 # log/debug files
 *log
 
@@ -15,3 +23,7 @@ env
 
 # OpenZeppelin proxy files
 .openzeppelin
+
+# Config files
+deployment-config.*.js
+!deployment-config.template.js
