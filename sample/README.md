@@ -30,7 +30,7 @@ To run tests in this sample project, first go the parent root project to build t
 
 ```shell
 cd ..
-yarn install && yarn build
+npm install && npm run build
 ```
 
 After that, go to the `sample` folder, then run `npm install` to install dependencies.

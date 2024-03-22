@@ -5,7 +5,7 @@ module.exports = {
     tsconfigRootDir: __dirname,
     project: ["./tsconfig.json"],
   },
-  plugins: ["@typescript-eslint", "import", "eslint-comments"],
+  plugins: ["@typescript-eslint", "import", "eslint-comments", "prettier"],
   extends: [
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended",
@@ -13,6 +13,7 @@ module.exports = {
     "plugin:import/recommended",
     "plugin:import/typescript",
     "plugin:eslint-comments/recommended",
-    "prettier",
+    "plugin:prettier/recommended",
   ],
+  ignorePatterns: ['.eslintrc.js']
 };

@@ -21,10 +21,10 @@ jobs:
         node-version: "${{ env.NODE_VER }}"
         registry-url: https://registry.npmjs.org/
     - name: Install Deps
-      run: yarn install
+      run: npm install
     - name: Build
-      run: yarn build
+      run: npm run build
     - name: Publish
       env:
         NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
-      run: yarn publish --access public
+      run: npm publish --access public
