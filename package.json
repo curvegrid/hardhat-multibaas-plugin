@@ -24,8 +24,7 @@
   "scripts": {
     "prepare": "husky",
     "build": "tsc --build",
-    "lint": "eslint . --ext .ts",
-    "lint:fixAll": "lint --fix",
+    "fix": "eslint --fix '{*,**/*}.{js,ts}'",
     "format": "prettier \"**/*.{js,ts,md,json,yml}\" --write --ignore-path .gitignore"
   },
   "dependencies": {
