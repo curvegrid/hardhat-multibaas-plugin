@@ -24,8 +24,7 @@
   "scripts": {
     "prepare": "husky",
     "build": "tsc --build",
-    "fix": "eslint --fix '{*,**/*}.{js,ts}'",
-    "format": "prettier \"**/*.{js,ts,md,json,yml}\" --write --ignore-path .gitignore"
+    "fix": "eslint --fix '{*,**/*}.{js,ts}'"
   },
   "dependencies": {
     "@nomicfoundation/hardhat-ethers": "^3.0.5",
