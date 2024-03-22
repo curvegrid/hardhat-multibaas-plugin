@@ -11,18 +11,8 @@
     "ethereum"
   ],
   "lint-staged": {
-    "*.{json}": [
-      "yarn prettier --write"
-    ],
-    "*.{js,ts}": [
-      "yarn prettier --write",
-      "yarn eslint --fix"
-    ]
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
+    "*.{js,ts}": "eslint --fix",
+    "*.json": "prettier --write"
   },
   "description": "A helper plugin for integrating MultiBaas into Hardhat",
   "author": "Curvegrid",
@@ -32,10 +22,11 @@
   ],
   "license": "MIT",
   "scripts": {
+    "prepare": "husky",
     "build": "tsc --build",
-    "lint": "yarn eslint . --ext .ts",
-    "lint:fixAll": "yarn lint --fix",
-    "format": "yarn prettier \"**/*.{js,ts,md,json,yml}\" --write --ignore-path .gitignore"
+    "lint": "eslint . --ext .ts",
+    "lint:fixAll": "lint --fix",
+    "format": "prettier \"**/*.{js,ts,md,json,yml}\" --write --ignore-path .gitignore"
   },
   "dependencies": {
     "@nomicfoundation/hardhat-ethers": "^3.0.5",
