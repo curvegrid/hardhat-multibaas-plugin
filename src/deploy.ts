@@ -485,7 +485,7 @@ export class MBDeployer implements MBDeployerI {
       contractArguments,
       {
         kind: options.proxyKind,
-        constructorArgs: options.constructorArgs
+        constructorArgs: options.constructorArgs,
       },
     );
     await contract.waitForDeployment();
