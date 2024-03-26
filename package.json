@@ -31,7 +31,7 @@
     "@openzeppelin/hardhat-upgrades": "^3.0.5",
     "axios": "^1.6.8",
     "ethers": "^6.11.1",
-    "hardhat": "^2.22.1",
+    "hardhat": "^2.22.2",
     "validator": "^13.11.0"
   },
   "devDependencies": {
