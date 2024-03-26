@@ -177,7 +177,7 @@ export class MBDeployer implements MBDeployerI {
         language: "solidity",
         bin: bytecode,
         // MB expects these to be JSON strings
-        rawAbi: JSON.stringify(contract.interface.fragments),
+        rawAbi: contract.interface.formatJson(),
         // It seems `ethers.js` doesn't support parsing `devdoc` or `userdoc` from smart contracts.
         // Use empty structs for those fields.
         developerDoc: "{}",
