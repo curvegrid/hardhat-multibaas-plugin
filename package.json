@@ -27,7 +27,7 @@
     "fix": "eslint --fix '{*,**/*}.{js,ts}'"
   },
   "dependencies": {
-    "@nomicfoundation/hardhat-ethers": "^3.0.5",
+    "@nomicfoundation/hardhat-ethers": "^3.0.6",
     "@openzeppelin/hardhat-upgrades": "^3.1.0",
     "axios": "^1.6.8",
     "ethers": "^6.12.1",
