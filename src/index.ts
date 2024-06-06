@@ -1,10 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unsafe-return */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 // Copyright (c) 2021 Curvegrid Inc.
-
 import "@nomicfoundation/hardhat-ethers";
 import "@openzeppelin/hardhat-upgrades";
 import { extendConfig, extendEnvironment } from "hardhat/config";
@@ -17,9 +11,20 @@ import {
 import { MBDeployer } from "./deploy";
 import "./type-extensions";
 
+// Define the type for the settings object
+interface CompilerSettings {
+  outputSelection?: OutputSelection;
+}
+
+interface OutputSelection {
+  "*": {
+    "*": string[];
+    "": string[];
+  };
+}
+
 // Function to ensure userdoc and devdoc are present in outputSelection
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function ensureUserDocAndDevDoc(outputSelection: Record<string, any>) {
+function ensureUserDocAndDevDoc(outputSelection: OutputSelection) {
   const allContracts = outputSelection["*"] || {};
   if (!allContracts["*"]) {
     allContracts["*"] = [];
@@ -77,19 +82,16 @@ extendConfig(
       if (!compiler.settings) {
         compiler.settings = {};
       }
+      // Cast settings to CompilerSettings to safely access outputSelection
+      const settings = compiler.settings as CompilerSettings;
 
-      if (!compiler.settings.outputSelection) {
-        compiler.settings.outputSelection = {};
+      if (!settings.outputSelection) {
+        settings.outputSelection = {} as OutputSelection;
       }
 
-      compiler.settings.outputSelection = ensureUserDocAndDevDoc(
-        compiler.settings.outputSelection,
+      settings.outputSelection = ensureUserDocAndDevDoc(
+        settings.outputSelection,
       );
     });
   },
 );
-/* eslint-enable @typescript-eslint/no-unsafe-return */
-/* eslint-enable @typescript-eslint/no-unsafe-call */
-/* eslint-enable @typescript-eslint/no-unsafe-argument */
-/* eslint-enable @typescript-eslint/no-unsafe-assignment */
-/* eslint-enable @typescript-eslint/no-unsafe-member-access */
