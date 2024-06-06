@@ -1,3 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 // Copyright (c) 2021 Curvegrid Inc.
 
 import "@nomicfoundation/hardhat-ethers";
@@ -7,6 +11,26 @@ import { lazyObject } from "hardhat/plugins";
 import { HardhatConfig, HardhatUserConfig } from "hardhat/types";
 import { MBDeployer } from "./deploy";
 import "./type-extensions";
+
+// Function to ensure userdoc and devdoc are present in outputSelection
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function ensureUserDocAndDevDoc(outputSelection: any) {
+  const allContracts = outputSelection["*"] || {};
+  if (!allContracts["*"]) {
+    allContracts["*"] = [];
+  }
+
+  if (!allContracts["*"].includes("userdoc")) {
+    allContracts["*"].push("userdoc");
+  }
+
+  if (!allContracts["*"].includes("devdoc")) {
+    allContracts["*"].push("devdoc");
+  }
+
+  outputSelection["*"] = allContracts;
+  return outputSelection;
+}
 
 extendEnvironment((hre) => {
   hre.mbDeployer = lazyObject(() => {
@@ -30,5 +54,36 @@ extendConfig(
     }
 
     config.mbConfig = mbConfig;
+
+    // Ensure the compiler settings are defined
+    if (!config.solidity) {
+      throw new Error("Solidity configuration is missing in hardhat.config.js");
+    }
+
+    // Ensure the compilers array is defined
+    if (!Array.isArray(config.solidity.compilers)) {
+      throw new Error(
+        "Solidity compilers array is missing in hardhat.config.js",
+      );
+    }
+
+    // Iterate over each compiler configuration and ensure userdoc and devdoc are included
+    for (const compiler of config.solidity.compilers) {
+      if (!compiler.settings) {
+        compiler.settings = {};
+      }
+
+      if (!compiler.settings.outputSelection) {
+        compiler.settings.outputSelection = {};
+      }
+
+      compiler.settings.outputSelection = ensureUserDocAndDevDoc(
+        compiler.settings.outputSelection,
+      );
+    }
   },
 );
+/* eslint-enable @typescript-eslint/no-unsafe-return */
+/* eslint-enable @typescript-eslint/no-unsafe-call */
+/* eslint-enable @typescript-eslint/no-unsafe-assignment */
+/* eslint-enable @typescript-eslint/no-unsafe-member-access */
