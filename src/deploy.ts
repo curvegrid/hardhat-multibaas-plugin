@@ -383,40 +383,46 @@ export class MBDeployer implements MBDeployerI {
     return startingBlock;
   }
 
+  /* eslint-disable @typescript-eslint/no-unsafe-assignment */
+  /* eslint-disable @typescript-eslint/no-unsafe-call */
+  /* eslint-disable @typescript-eslint/no-unsafe-member-access */
+  /* eslint-disable @typescript-eslint/no-var-requires */
+  /* eslint-disable @typescript-eslint/no-unsafe-argument */
   private async getContractBuildInfo(
     contractName: string,
   ): Promise<ExtendedCompilerOutputContract | Record<string, never>> {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-var-requires
     const hre = require("hardhat");
-
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
     const artifactPaths: string[] = await hre.artifacts.getArtifactPaths();
     for (const artifactPath of artifactPaths) {
       const artifactName = path.basename(artifactPath, ".json");
       if (artifactName !== contractName) {
         continue;
       }
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
       const artifact: Artifact = await fs.readJSON(artifactPath);
       const artifactDBGPath = path.join(
         path.dirname(artifactPath),
         artifactName + ".dbg.json",
       );
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
       const artifactDBG = await fs.readJSON(artifactDBGPath);
-      const buildinfoPath = path.join(
+      const buildInfoPath = path.join(
         path.dirname(artifactDBGPath),
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
         artifactDBG.buildInfo,
       );
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-      const buildInfo: BuildInfo = await fs.readJSON(buildinfoPath);
+      const buildInfo: BuildInfo = await fs.readJSON(buildInfoPath);
       const contractBuildInfo =
         buildInfo.output.contracts[artifact.sourceName] || {};
-      return contractBuildInfo[artifactName] || {};
+      return (
+        (contractBuildInfo[artifactName] as ExtendedCompilerOutputContract) ||
+        {}
+      );
     }
     return {};
   }
+  /* eslint-enable @typescript-eslint/no-unsafe-assignment */
+  /* eslint-enable @typescript-eslint/no-unsafe-call */
+  /* eslint-enable @typescript-eslint/no-unsafe-member-access */
+  /* eslint-enable @typescript-eslint/no-var-requires */
+  /* eslint-enable @typescript-eslint/no-unsafe-argument */
 
   /**
    * Deploy a contract with `contractName` name using `hardhat-ethers` plugin.
