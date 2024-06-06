@@ -8,28 +8,66 @@ import "./ConvertLib.sol";
 // coin/token contracts. If you want to create a standards-compliant
 // token, see: https://github.com/ConsenSys/Tokens. Cheers!
 
+/**
+ * @title MetaCoin
+ * @dev A simple coin-like contract example. This contract is not standards compliant and is meant for educational purposes. (devdoc)
+ * @notice A simple coin-like contract example. This contract is not standards compliant and is meant for educational purposes. (userdoc)
+ */
 contract MetaCoin {
-	mapping (address => uint) balances;
+    mapping(address => uint) balances;
 
-	event Transfer(address indexed _from, address indexed _to, uint256 _value);
+    /**
+     * @dev Event triggered when coins are transferred. (devdoc)
+     * @notice Event triggered when coins are transferred. (userdoc)
+     * @param _from The address from which the coins are sent.
+     * @param _to The address to which the coins are sent.
+     * @param _value The amount of coins transferred.
+     */
+    event Transfer(address indexed _from, address indexed _to, uint256 _value);
 
-	constructor() {
-		balances[tx.origin] = 10000;
-	}
+    /**
+     * @dev Constructor that gives the contract creator an initial balance of 10000 MetaCoins. (devdoc)
+     * @notice Constructor that gives the contract creator an initial balance of 10000 MetaCoins. (userdoc)
+     */
+    constructor() {
+        balances[tx.origin] = 10000;
+    }
 
-	function sendCoin(address receiver, uint amount) public returns(bool sufficient) {
-		if (balances[msg.sender] < amount) return false;
-		balances[msg.sender] -= amount;
-		balances[receiver] += amount;
-		emit Transfer(msg.sender, receiver, amount);
-		return true;
-	}
+    /**
+     * @dev Transfers coins from sender's account to receiver's account if the sender has sufficient balance. (devdoc)
+     * @notice Send `amount` of MetaCoins to `receiver`. (userdoc)
+     * @param receiver The address of the receiver.
+     * @param amount The amount of MetaCoins to send.
+     * @return sufficient Returns true if the sender has enough balance, false otherwise.
+     */
+    function sendCoin(
+        address receiver,
+        uint amount
+    ) public returns (bool sufficient) {
+        if (balances[msg.sender] < amount) return false;
+        balances[msg.sender] -= amount;
+        balances[receiver] += amount;
+        emit Transfer(msg.sender, receiver, amount);
+        return true;
+    }
 
-	function getBalanceInEth(address addr) public view returns(uint){
-		return ConvertLib.convert(getBalance(addr),2);
-	}
+    /**
+     * @dev Converts the balance of `addr` from MetaCoins to Ether. (devdoc)
+     * @notice Get the balance of `addr` in Ether. (userdoc)
+     * @param addr The address whose balance is to be checked.
+     * @return The balance in Ether.
+     */
+    function getBalanceInEth(address addr) public view returns (uint) {
+        return ConvertLib.convert(getBalance(addr), 2);
+    }
 
-	function getBalance(address addr) public view returns(uint) {
-		return balances[addr];
-	}
+    /**
+     * @dev Returns the balance of `addr`. (devdoc)
+     * @notice Get the balance of `addr` in MetaCoins. (userdoc)
+     * @param addr The address whose balance is to be checked.
+     * @return The balance in MetaCoins.
+     */
+    function getBalance(address addr) public view returns (uint) {
+        return balances[addr];
+    }
 }
