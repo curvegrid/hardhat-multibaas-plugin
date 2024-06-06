@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 // Copyright (c) 2021 Curvegrid Inc.
@@ -8,13 +9,17 @@ import "@nomicfoundation/hardhat-ethers";
 import "@openzeppelin/hardhat-upgrades";
 import { extendConfig, extendEnvironment } from "hardhat/config";
 import { lazyObject } from "hardhat/plugins";
-import { HardhatConfig, HardhatUserConfig } from "hardhat/types";
+import {
+  HardhatConfig,
+  HardhatUserConfig,
+  SolcUserConfig,
+} from "hardhat/types";
 import { MBDeployer } from "./deploy";
 import "./type-extensions";
 
 // Function to ensure userdoc and devdoc are present in outputSelection
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function ensureUserDocAndDevDoc(outputSelection: any) {
+function ensureUserDocAndDevDoc(outputSelection: Record<string, any>) {
   const allContracts = outputSelection["*"] || {};
   if (!allContracts["*"]) {
     allContracts["*"] = [];
@@ -68,7 +73,7 @@ extendConfig(
     }
 
     // Iterate over each compiler configuration and ensure userdoc and devdoc are included
-    for (const compiler of config.solidity.compilers) {
+    config.solidity.compilers.forEach((compiler: SolcUserConfig) => {
       if (!compiler.settings) {
         compiler.settings = {};
       }
@@ -80,10 +85,11 @@ extendConfig(
       compiler.settings.outputSelection = ensureUserDocAndDevDoc(
         compiler.settings.outputSelection,
       );
-    }
+    });
   },
 );
 /* eslint-enable @typescript-eslint/no-unsafe-return */
 /* eslint-enable @typescript-eslint/no-unsafe-call */
+/* eslint-enable @typescript-eslint/no-unsafe-argument */
 /* eslint-enable @typescript-eslint/no-unsafe-assignment */
 /* eslint-enable @typescript-eslint/no-unsafe-member-access */
