@@ -4,15 +4,16 @@ import {
   FactoryOptions,
   HardhatEthersHelpers,
 } from "@nomicfoundation/hardhat-ethers/types";
-import axios, { AxiosRequestConfig } from "axios";
-import { ContractFactory, ethers, Signer } from "ethers";
-import { HardhatUpgrades } from "@openzeppelin/hardhat-upgrades";
 import {
+  HardhatRuntimeEnvironment,
   Artifact,
   BuildInfo,
   CompilerOutputContract,
   MBConfig,
 } from "hardhat/types";
+import axios, { AxiosRequestConfig } from "axios";
+import { ContractFactory, ethers, Signer } from "ethers";
+import { HardhatUpgrades } from "@openzeppelin/hardhat-upgrades";
 import { URL } from "url";
 import {
   MultiBaasAddress,
@@ -27,7 +28,7 @@ import {
   MBDeployerI,
 } from "./type-extensions";
 import path from "path";
-import fs from "fs-extra";
+import { readJSON } from "fs-extra";
 
 type ethersT = typeof ethers & HardhatEthersHelpers;
 
@@ -35,6 +36,10 @@ type ethersT = typeof ethers & HardhatEthersHelpers;
 interface ExtendedCompilerOutputContract extends CompilerOutputContract {
   devdoc?: unknown;
   userdoc?: unknown;
+}
+
+interface ArtifactDBG {
+  buildInfo: string;
 }
 
 export class MBDeployer implements MBDeployerI {
@@ -383,32 +388,28 @@ export class MBDeployer implements MBDeployerI {
     return startingBlock;
   }
 
-  /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-  /* eslint-disable @typescript-eslint/no-unsafe-call */
-  /* eslint-disable @typescript-eslint/no-unsafe-member-access */
-  /* eslint-disable @typescript-eslint/no-var-requires */
-  /* eslint-disable @typescript-eslint/no-unsafe-argument */
   private async getContractBuildInfo(
     contractName: string,
   ): Promise<ExtendedCompilerOutputContract | Record<string, never>> {
-    const hre = require("hardhat");
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const hre = require("hardhat") as HardhatRuntimeEnvironment;
     const artifactPaths: string[] = await hre.artifacts.getArtifactPaths();
     for (const artifactPath of artifactPaths) {
       const artifactName = path.basename(artifactPath, ".json");
       if (artifactName !== contractName) {
         continue;
       }
-      const artifact: Artifact = await fs.readJSON(artifactPath);
+      const artifact = (await readJSON(artifactPath)) as Artifact;
       const artifactDBGPath = path.join(
         path.dirname(artifactPath),
         artifactName + ".dbg.json",
       );
-      const artifactDBG = await fs.readJSON(artifactDBGPath);
+      const artifactDBG = (await readJSON(artifactDBGPath)) as ArtifactDBG;
       const buildInfoPath = path.join(
         path.dirname(artifactDBGPath),
         artifactDBG.buildInfo,
       );
-      const buildInfo: BuildInfo = await fs.readJSON(buildInfoPath);
+      const buildInfo: BuildInfo = (await readJSON(buildInfoPath)) as BuildInfo;
       const contractBuildInfo =
         buildInfo.output.contracts[artifact.sourceName] || {};
       return (
@@ -418,11 +419,6 @@ export class MBDeployer implements MBDeployerI {
     }
     return {};
   }
-  /* eslint-enable @typescript-eslint/no-unsafe-assignment */
-  /* eslint-enable @typescript-eslint/no-unsafe-call */
-  /* eslint-enable @typescript-eslint/no-unsafe-member-access */
-  /* eslint-enable @typescript-eslint/no-var-requires */
-  /* eslint-enable @typescript-eslint/no-unsafe-argument */
 
   /**
    * Deploy a contract with `contractName` name using `hardhat-ethers` plugin.
