@@ -8,7 +8,6 @@ import {
   HardhatRuntimeEnvironment,
   Artifact,
   BuildInfo,
-  CompilerOutputContract,
   MBConfig,
 } from "hardhat/types";
 import axios, { AxiosRequestConfig } from "axios";
@@ -29,18 +28,9 @@ import {
 } from "./type-extensions";
 import path from "path";
 import { readJSON } from "fs-extra";
+import { ArtifactDBG, ExtendedCompilerOutputContract } from "./types";
 
 type ethersT = typeof ethers & HardhatEthersHelpers;
-
-// ExtendedCompilerOutputContract extends CompilerOutputContract by adding the documentation fields
-interface ExtendedCompilerOutputContract extends CompilerOutputContract {
-  devdoc?: unknown;
-  userdoc?: unknown;
-}
-
-interface ArtifactDBG {
-  buildInfo: string;
-}
 
 export class MBDeployer implements MBDeployerI {
   constructor(

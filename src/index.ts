@@ -10,18 +10,7 @@ import {
 } from "hardhat/types";
 import { MBDeployer } from "./deploy";
 import "./type-extensions";
-
-// Define the type for the settings object
-interface CompilerSettings {
-  outputSelection?: OutputSelection;
-}
-
-interface OutputSelection {
-  "*": {
-    "*": string[];
-    "": string[];
-  };
-}
+import { CompilerSettings, OutputSelection } from "./types";
 
 // Function to ensure userdoc and devdoc are present in outputSelection
 function ensureUserDocAndDevDoc(outputSelection: OutputSelection) {
