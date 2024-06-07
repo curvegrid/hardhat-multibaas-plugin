@@ -4,10 +4,15 @@ import {
   FactoryOptions,
   HardhatEthersHelpers,
 } from "@nomicfoundation/hardhat-ethers/types";
+import {
+  HardhatRuntimeEnvironment,
+  Artifact,
+  BuildInfo,
+  MBConfig,
+} from "hardhat/types";
 import axios, { AxiosRequestConfig } from "axios";
 import { ContractFactory, ethers, Signer } from "ethers";
 import { HardhatUpgrades } from "@openzeppelin/hardhat-upgrades";
-import { MBConfig } from "hardhat/types";
 import { URL } from "url";
 import {
   MultiBaasAddress,
@@ -21,6 +26,9 @@ import {
   DeployProxyResult,
   MBDeployerI,
 } from "./type-extensions";
+import path from "path";
+import { readJSON } from "fs-extra";
+import { ArtifactDBG, ExtendedCompilerOutputContract } from "./types";
 
 type ethersT = typeof ethers & HardhatEthersHelpers;
 
@@ -91,6 +99,8 @@ export class MBDeployer implements MBDeployerI {
     contractName: string,
     contract: ContractFactory,
     options: DeployOptions,
+    developerDoc: unknown,
+    userDoc: unknown,
   ): Promise<MultiBaasContract> {
     const contractLabel = options.contractLabel ?? contractName.toLowerCase();
     if (contractLabel === undefined) throw new Error("Contract has no name");
@@ -180,8 +190,8 @@ export class MBDeployer implements MBDeployerI {
         rawAbi: contract.interface.formatJson(),
         // It seems `ethers.js` doesn't support parsing `devdoc` or `userdoc` from smart contracts.
         // Use empty structs for those fields.
-        developerDoc: "{}",
-        userDoc: "{}",
+        developerDoc: JSON.stringify(developerDoc) || "{}",
+        userDoc: JSON.stringify(userDoc) || "{}",
         version: contractVersion,
         contractName,
       },
@@ -368,6 +378,38 @@ export class MBDeployer implements MBDeployerI {
     return startingBlock;
   }
 
+  private async getContractBuildInfo(
+    contractName: string,
+  ): Promise<ExtendedCompilerOutputContract | Record<string, never>> {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const hre = require("hardhat") as HardhatRuntimeEnvironment;
+    const artifactPaths: string[] = await hre.artifacts.getArtifactPaths();
+    for (const artifactPath of artifactPaths) {
+      const artifactName = path.basename(artifactPath, ".json");
+      if (artifactName !== contractName) {
+        continue;
+      }
+      const artifact = (await readJSON(artifactPath)) as Artifact;
+      const artifactDBGPath = path.join(
+        path.dirname(artifactPath),
+        artifactName + ".dbg.json",
+      );
+      const artifactDBG = (await readJSON(artifactDBGPath)) as ArtifactDBG;
+      const buildInfoPath = path.join(
+        path.dirname(artifactDBGPath),
+        artifactDBG.buildInfo,
+      );
+      const buildInfo: BuildInfo = (await readJSON(buildInfoPath)) as BuildInfo;
+      const contractBuildInfo =
+        buildInfo.output.contracts[artifact.sourceName] || {};
+      return (
+        (contractBuildInfo[artifactName] as ExtendedCompilerOutputContract) ||
+        {}
+      );
+    }
+    return {};
+  }
+
   /**
    * Deploy a contract with `contractName` name using `hardhat-ethers` plugin.
    * The contract's compiled bytecode and its ABI are uploaded to MultiBaas.
@@ -393,12 +435,16 @@ export class MBDeployer implements MBDeployerI {
       signerOrOptions,
     );
 
+    const contractBuildInfo = await this.getContractBuildInfo(contractName);
+
     // after finishing compiling, upload the bytecode and
     // contract's data to MultiBaas
     const mbContract = await this.createMBContract(
       contractName,
       factory,
       options,
+      contractBuildInfo["devdoc"],
+      contractBuildInfo["userdoc"],
     );
 
     if (typeof options.overrides === "object") {
@@ -457,12 +503,16 @@ export class MBDeployer implements MBDeployerI {
       signerOrOptions,
     );
 
+    const contractBuildInfo = await this.getContractBuildInfo(contractName);
+
     // after finishing compiling, upload the bytecode and
     // contract's data to MultiBaas
     const mbContract = await this.createMBContract(
       contractName,
       factory,
       options,
+      contractBuildInfo["devdoc"],
+      contractBuildInfo["userdoc"],
     );
 
     if (typeof options.overrides === "object") {
