@@ -82,5 +82,27 @@ extendConfig(
         settings.outputSelection,
       );
     });
+
+    // If there are any overrides, we should also ensure userdoc and devdoc are included
+    if (config.solidity.overrides) {
+      // Iterate over each override configuration and ensure userdoc and devdoc are included
+      Object.values(config.solidity.overrides).forEach(
+        (override: SolcUserConfig) => {
+          if (!override.settings) {
+            override.settings = {};
+          }
+          // Cast settings to CompilerSettings to safely access outputSelection
+          const settings = override.settings as CompilerSettings;
+
+          if (!settings.outputSelection) {
+            settings.outputSelection = {} as OutputSelection;
+          }
+
+          settings.outputSelection = ensureUserDocAndDevDoc(
+            settings.outputSelection,
+          );
+        },
+      );
+    }
   },
 );
