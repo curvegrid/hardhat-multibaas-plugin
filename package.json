@@ -1,6 +1,6 @@
 {
   "name": "hardhat-multibaas-plugin",
-  "version": "0.3.5",
+  "version": "0.3.6",
   "repository": "https://github.com/curvegrid/hardhat-multibaas-plugin",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
