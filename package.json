@@ -1,6 +1,6 @@
 {
   "name": "hardhat-multibaas-plugin",
-  "version": "0.3.6",
+  "version": "0.3.7",
   "repository": "https://github.com/curvegrid/hardhat-multibaas-plugin",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -52,5 +52,10 @@
     "prettier": "^3.3.3",
     "ts-node": "^10.9.2",
     "typescript": "^5.5.4"
+  },
+  "overrides": {
+    "@openzeppelin/hardhat-upgrades": {
+      "@openzeppelin/upgrades-core": "1.34.1"
+    }
   }
 }
