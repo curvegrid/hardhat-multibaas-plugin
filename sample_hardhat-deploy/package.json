@@ -1,0 +1,21 @@
+{
+  "name": "sample_hardhat-deploy",
+  "description": "sample package for testing hardhat-multibaas-plugin with hardhat-deploy",
+  "version": "1.0.0",
+  "author": "Curvegrid",
+  "license": "MIT",
+  "scripts": {
+    "test": "npx hardhat test",
+    "deploy": "HARDHAT_NETWORK=development npx hardhat deploy",
+    "deploy:greeter": "HARDHAT_NETWORK=development npx hardhat deploy --tags Greeter",
+    "submit": "HARDHAT_NETWORK=development npx hardhat mb-submit",
+    "submit:greeter": "HARDHAT_NETWORK=development npx hardhat mb-submit --deployment-name Greeter@1.0"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "@openzeppelin/contracts-upgradeable": "^4.9.6",
+    "hardhat": "^2.22.7",
+    "hardhat-deploy": "^0.12.4",
+    "hardhat-multibaas-plugin": "./.."
+  }
+}

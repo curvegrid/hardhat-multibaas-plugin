@@ -1,10 +1,30 @@
 // Copyright (c) 2021 Curvegrid Inc.
 
 import { FactoryOptions } from "@nomicfoundation/hardhat-ethers/types";
-import { Contract, Signer } from "ethers";
+import { Contract, Interface, Signer } from "ethers";
 import "hardhat/types/config";
 import "hardhat/types/runtime";
 import { MultiBaasAddress, MultiBaasContract } from "./multibaasApi";
+
+export type Receipt = {
+  blockNumber: number;
+};
+export interface Deployment {
+  address: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  abi: any[];
+  receipt?: Receipt;
+  bytecode?: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  userdoc?: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  devdoc?: any;
+}
+
+export interface SubmitResult {
+  mbContract: MultiBaasContract;
+  mbAddress: MultiBaasAddress;
+}
 
 /**
  * Result of MultiBaas Deployer's deploy function.
@@ -13,10 +33,8 @@ import { MultiBaasAddress, MultiBaasContract } from "./multibaasApi";
  * @field mbContract a MultiBaas contract
  * @field mbAddress a MultiBaas address
  **/
-export interface DeployResult {
+export interface DeployResult extends SubmitResult {
   contract: Contract;
-  mbContract: MultiBaasContract;
-  mbAddress: MultiBaasAddress;
 }
 
 export interface DeployProxyResult extends DeployResult {
@@ -38,6 +56,16 @@ export interface MBDeployerI {
     contractArguments?: unknown[],
     options?: DeployOptions,
   ) => Promise<DeployResult>;
+  submitDeployment: (
+    name: string,
+    address: string,
+    iface: Interface,
+    bytecode: string,
+    devdoc: unknown,
+    userdoc: unknown,
+    startingBlock: string | undefined,
+    options: SubmitOptions,
+  ) => Promise<SubmitResult>;
   deployProxy: (
     signerOrOptions: Signer | FactoryOptions,
     contractName: string,
@@ -53,10 +81,7 @@ export interface MBDeployerI {
   setup: () => Promise<void>;
 }
 
-/**
- * The deploy options.
- */
-export interface DeployOptions {
+export interface SubmitOptions {
   /**
    * Overwrite the default contractLabel. If set and a duplicate is found,
    * the contract is assigned a newer version.
@@ -73,7 +98,12 @@ export interface DeployOptions {
    * The auto-generated address label is never a duplicate.
    */
   addressLabel?: string;
+}
 
+/**
+ * The deploy options.
+ */
+export interface DeployOptions extends SubmitOptions {
   /**
    * Override the default deploy transaction arguments
    * (gasLimit, gasPrice, etc)
@@ -127,11 +157,18 @@ declare module "hardhat/types/config" {
     apiKey: string;
     allowUpdateAddress: string[];
     allowUpdateContract: string[];
+    submitOptions?: { [name: string]: SubmitOptions };
   }
+}
+
+export interface DeploymentsExtension {
+  get(name: string): Promise<Deployment>; // fetch a deployment by name, throw if not existing
+  all(): Promise<{ [name: string]: Deployment }>; // return all deployments
 }
 
 declare module "hardhat/types/runtime" {
   export interface HardhatRuntimeEnvironment {
     mbDeployer: MBDeployerI;
+    deployments: DeploymentsExtension;
   }
 }
