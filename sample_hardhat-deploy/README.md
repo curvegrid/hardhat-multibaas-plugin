@@ -1,4 +1,4 @@
-# Testing `hardhat-multibaas-plugin`
+# Testing `hardhat-multibaas-plugin` with `hardhat-deploy`-generated deployment files
 
 ## Requirements
 

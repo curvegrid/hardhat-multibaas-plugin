@@ -117,7 +117,7 @@ export class MBDeployer implements MBDeployerI {
           `/contracts/${contractLabel}/${options.contractVersion}`,
         )) as MultiBaasContract;
         // two contracts are not the same
-        if (mbContract.bin !== bytecode) {
+        if (mbContract.bin !== bytecode.toLowerCase()) {
           // A different contract with same (contractLabel, contractVersion) exists.
           // We may need to delete the old contract to upload the new one.
           const allowUpdateContract = this.mbConfig.allowUpdateContract;
@@ -160,7 +160,7 @@ export class MBDeployer implements MBDeployerI {
           `/contracts/${contractLabel}`,
         )) as MultiBaasContract;
         // If contracts share the same bytecode, just return
-        if (mbContract.bin === bytecode) {
+        if (mbContract.bin === bytecode.toLowerCase()) {
           console.log(
             `MultiBaas: Contract "${mbContract.contractName} ${mbContract.version}" already created. Skipping creation.`,
           );
