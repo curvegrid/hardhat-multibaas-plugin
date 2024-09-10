@@ -11,7 +11,7 @@ import {
   MBConfig,
 } from "hardhat/types";
 import axios, { AxiosRequestConfig } from "axios";
-import { ethers, Interface, Signer } from "ethers";
+import { ethers, Signer } from "ethers";
 import { HardhatUpgrades } from "@openzeppelin/hardhat-upgrades";
 import { URL } from "url";
 import {
@@ -21,7 +21,7 @@ import {
   MultiBaasContract,
 } from "./multibaasApi";
 import {
-  // Deployment,
+  Deployment,
   DeployOptions,
   DeployResult,
   DeployProxyResult,
@@ -100,14 +100,14 @@ export class MBDeployer implements MBDeployerI {
    */
   private async createMBContract(
     contractName: string,
-    iface: Interface,
-    bytecode: string,
+    artifact: Artifact | Deployment,
     options: SubmitOptions,
     developerDoc: unknown,
     userDoc: unknown,
   ): Promise<MultiBaasContract> {
     const contractLabel = options.contractLabel ?? contractName.toLowerCase();
     if (contractLabel === undefined) throw new Error("Contract has no name");
+    const bytecode = artifact.bytecode!;
 
     let contractVersion: string | null = null;
     if (options.contractVersion !== undefined) {
@@ -189,10 +189,7 @@ export class MBDeployer implements MBDeployerI {
         label: contractLabel,
         language: "solidity",
         bin: bytecode,
-        // MB expects these to be JSON strings
-        rawAbi: iface.formatJson(),
-        // It seems `ethers.js` doesn't support parsing `devdoc` or `userdoc` from smart contracts.
-        // Use empty structs for those fields.
+        rawAbi: JSON.stringify(artifact.abi),
         developerDoc: JSON.stringify(developerDoc) || "{}",
         userDoc: JSON.stringify(userDoc) || "{}",
         version: contractVersion,
@@ -381,6 +378,12 @@ export class MBDeployer implements MBDeployerI {
     return startingBlock;
   }
 
+  private async getContractArtifact(contractName: string): Promise<Artifact> {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const hre = require("hardhat") as HardhatRuntimeEnvironment;
+    return await hre.artifacts.readArtifact(contractName);
+  }
+
   private async getContractBuildInfo(
     contractName: string,
   ): Promise<ExtendedCompilerOutputContract | Record<string, never>> {
@@ -451,13 +454,13 @@ export class MBDeployer implements MBDeployerI {
     const contract = await factory.deploy(...contractArguments);
     await contract.waitForDeployment();
 
+    const artifact = await this.getContractArtifact(contractName);
     const contractBuildInfo = await this.getContractBuildInfo(contractName);
 
     const { mbContract, mbAddress } = await this.submitDeployment(
       contractName,
       await contract.getAddress(),
-      factory.interface,
-      factory.bytecode,
+      artifact,
       contractBuildInfo["devdoc"],
       contractBuildInfo["userdoc"],
       options.startingBlock,
@@ -484,8 +487,7 @@ export class MBDeployer implements MBDeployerI {
   async submitDeployment(
     name: string,
     address: string,
-    iface: Interface,
-    bytecode: string,
+    artifact: Artifact | Deployment,
     devdoc: unknown,
     userdoc: unknown,
     startingBlock: string | undefined,
@@ -493,8 +495,7 @@ export class MBDeployer implements MBDeployerI {
   ): Promise<SubmitResult> {
     const mbContract = await this.createMBContract(
       name,
-      iface,
-      bytecode,
+      artifact,
       options,
       devdoc,
       userdoc,
@@ -543,14 +544,14 @@ export class MBDeployer implements MBDeployerI {
       signerOrOptions,
     );
 
+    const artifact = await this.getContractArtifact(contractName);
     const contractBuildInfo = await this.getContractBuildInfo(contractName);
 
     // after finishing compiling, upload the bytecode and
     // contract's data to MultiBaas
     const mbContract = await this.createMBContract(
       contractName,
-      factory.interface,
-      factory.bytecode,
+      artifact,
       options,
       contractBuildInfo["devdoc"],
       contractBuildInfo["userdoc"],

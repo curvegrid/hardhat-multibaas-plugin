@@ -1,7 +1,8 @@
 // Copyright (c) 2021 Curvegrid Inc.
 
 import { FactoryOptions } from "@nomicfoundation/hardhat-ethers/types";
-import { Contract, Interface, Signer } from "ethers";
+import { Contract, Signer } from "ethers";
+import { Artifact } from "hardhat/types";
 import "hardhat/types/config";
 import "hardhat/types/runtime";
 import { MultiBaasAddress, MultiBaasContract } from "./multibaasApi";
@@ -59,8 +60,7 @@ export interface MBDeployerI {
   submitDeployment: (
     name: string,
     address: string,
-    iface: Interface,
-    bytecode: string,
+    artifact: Artifact | Deployment,
     devdoc: unknown,
     userdoc: unknown,
     startingBlock: string | undefined,
