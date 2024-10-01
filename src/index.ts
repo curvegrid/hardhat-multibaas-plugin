@@ -1,16 +1,86 @@
 // Copyright (c) 2021 Curvegrid Inc.
 import "@nomicfoundation/hardhat-ethers";
 import "@openzeppelin/hardhat-upgrades";
-import { extendConfig, extendEnvironment } from "hardhat/config";
+import { extendConfig, extendEnvironment, task } from "hardhat/config";
 import { lazyObject } from "hardhat/plugins";
 import {
   HardhatConfig,
+  HardhatRuntimeEnvironment,
   HardhatUserConfig,
   SolcUserConfig,
 } from "hardhat/types";
 import { MBDeployer } from "./deploy";
-import "./type-extensions";
+import { Deployment, SubmitOptions } from "./type-extensions";
 import { CompilerSettings, OutputSelection } from "./types";
+import * as types from "hardhat/internal/core/params/argumentTypes";
+
+export const MULTIBAAS_SUBMIT_TASKNAME = "mb-submit";
+
+task(MULTIBAAS_SUBMIT_TASKNAME)
+  .setDescription("Submit contracts deployed with hardhat-deploy to MutiBaas")
+  .addOptionalParam(
+    "deploymentName",
+    "specific deployment name to submit to MultiBaas",
+    undefined,
+    types.string,
+  )
+  .setAction(async (args: { deploymentName: string }, hre) => {
+    if (hre.deployments === undefined) {
+      throw new Error(
+        "hardhat-deploy plugin is not installed. Please install it using `npm install --save-dev hardhat-deploy`",
+      );
+    }
+
+    async function submitDeployment(
+      hre: HardhatRuntimeEnvironment,
+      deploymentName: string,
+      deployment: Deployment,
+    ) {
+      const bytecode = deployment.bytecode;
+      if (bytecode === undefined) {
+        console.log(
+          `MultiBaas: bytecode is missing for deployment ${deploymentName}, skipping`,
+        );
+        return;
+      }
+      let options: SubmitOptions = {};
+      if (hre.config.mbConfig.submitOptions !== undefined) {
+        options =
+          { ...hre.config.mbConfig.submitOptions[deploymentName] } || {};
+      }
+      const [name, version] = deploymentName.split("@");
+      if (options.contractVersion === undefined) {
+        options.contractVersion = version;
+      }
+      const startingBlock = deployment.receipt
+        ? String(deployment.receipt.blockNumber - 1)
+        : undefined;
+      await hre.mbDeployer.submitDeployment(
+        name!,
+        deployment.address,
+        deployment,
+        deployment.devdoc,
+        deployment.userdoc,
+        startingBlock,
+        options,
+      );
+    }
+
+    if (args.deploymentName !== undefined) {
+      const deployment = await hre.deployments.get(args.deploymentName);
+      await submitDeployment(hre, args.deploymentName, deployment);
+      return;
+    }
+
+    const deployments = await hre.deployments.all();
+    for (const [name, deployment] of Object.entries(deployments)) {
+      // When deploying through hardhat-deploy with a proxy, additional deployments files are created for the proxy and implementation
+      // However, there is also a standard deployment file created with the address of the proxy and the ABI of the implementation
+      if (!name.endsWith("_Proxy") && !name.endsWith("_Implementation")) {
+        await submitDeployment(hre, name, deployment);
+      }
+    }
+  });
 
 // Function to ensure userdoc and devdoc are present in outputSelection
 function ensureUserDocAndDevDoc(outputSelection: OutputSelection) {

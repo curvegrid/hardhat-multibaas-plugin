@@ -21,10 +21,13 @@ import {
   MultiBaasContract,
 } from "./multibaasApi";
 import {
+  Deployment,
   DeployOptions,
   DeployResult,
   DeployProxyResult,
   MBDeployerI,
+  SubmitOptions,
+  SubmitResult,
 } from "./type-extensions";
 import path from "path";
 import { readJSON } from "fs-extra";
@@ -97,14 +100,14 @@ export class MBDeployer implements MBDeployerI {
    */
   private async createMBContract(
     contractName: string,
-    artifact: Artifact,
-    options: DeployOptions,
+    artifact: Artifact | Deployment,
+    options: SubmitOptions,
     developerDoc: unknown,
     userDoc: unknown,
   ): Promise<MultiBaasContract> {
     const contractLabel = options.contractLabel ?? contractName.toLowerCase();
     if (contractLabel === undefined) throw new Error("Contract has no name");
-    const bytecode = artifact.bytecode;
+    const bytecode = artifact.bytecode!;
 
     let contractVersion: string | null = null;
     if (options.contractVersion !== undefined) {
@@ -114,7 +117,7 @@ export class MBDeployer implements MBDeployerI {
           `/contracts/${contractLabel}/${options.contractVersion}`,
         )) as MultiBaasContract;
         // two contracts are not the same
-        if (mbContract.bin !== bytecode) {
+        if (mbContract.bin !== bytecode.toLowerCase()) {
           // A different contract with same (contractLabel, contractVersion) exists.
           // We may need to delete the old contract to upload the new one.
           const allowUpdateContract = this.mbConfig.allowUpdateContract;
@@ -157,7 +160,7 @@ export class MBDeployer implements MBDeployerI {
           `/contracts/${contractLabel}`,
         )) as MultiBaasContract;
         // If contracts share the same bytecode, just return
-        if (mbContract.bin === bytecode) {
+        if (mbContract.bin === bytecode.toLowerCase()) {
           console.log(
             `MultiBaas: Contract "${mbContract.contractName} ${mbContract.version}" already created. Skipping creation.`,
           );
@@ -186,7 +189,6 @@ export class MBDeployer implements MBDeployerI {
         label: contractLabel,
         language: "solidity",
         bin: bytecode,
-        // MB expects these to be JSON strings
         rawAbi: JSON.stringify(artifact.abi),
         developerDoc: JSON.stringify(developerDoc) || "{}",
         userDoc: JSON.stringify(userDoc) || "{}",
@@ -236,7 +238,7 @@ export class MBDeployer implements MBDeployerI {
   private async createMultiBaasAddress(
     address: string,
     contractLabel: string,
-    options: DeployOptions,
+    options: SubmitOptions,
   ): Promise<MultiBaasAddress> {
     // Check for conflicting addresses
     try {
@@ -439,19 +441,6 @@ export class MBDeployer implements MBDeployerI {
       signerOrOptions,
     );
 
-    const artifact = await this.getContractArtifact(contractName);
-    const contractBuildInfo = await this.getContractBuildInfo(contractName);
-
-    // after finishing compiling, upload the bytecode and
-    // contract's data to MultiBaas
-    const mbContract = await this.createMBContract(
-      contractName,
-      artifact,
-      options,
-      contractBuildInfo["devdoc"],
-      contractBuildInfo["userdoc"],
-    );
-
     if (typeof options.overrides === "object") {
       console.log(
         `MultiBaas: Override the default transaction arguments with ${JSON.stringify(
@@ -465,22 +454,69 @@ export class MBDeployer implements MBDeployerI {
     const contract = await factory.deploy(...contractArguments);
     await contract.waitForDeployment();
 
-    const startingBlock = this.normalizeStartingBlock(options.startingBlock);
+    const artifact = await this.getContractArtifact(contractName);
+    const contractBuildInfo = await this.getContractBuildInfo(contractName);
 
-    // create a new instance and linked it to the deployed contract on MultiBaas
-    let mbAddress = await this.createMultiBaasAddress(
+    const { mbContract, mbAddress } = await this.submitDeployment(
+      contractName,
       await contract.getAddress(),
+      artifact,
+      contractBuildInfo["devdoc"],
+      contractBuildInfo["userdoc"],
+      options.startingBlock,
+      options,
+    );
+
+    return { contract, mbContract, mbAddress };
+  }
+
+  /**
+   * Uploads a contract and its bytecode to Multibaas, then links the corresponding contract to its address.
+   *
+   * @param name the contract's name
+   * @param address the contract's address
+   * @param iface the contract's interface
+   * @param bytecode the contract's bytecode
+   * @param devdoc the contract's developer documentation
+   * @param userdoc the contract's user documentation
+   * @param startingBlock the starting block
+   * @param options the submit options
+   *
+   * @returns an array consisting of [Contract (`ethers.js`'s `Contract`), MultiBaasContract, MultiBaasAddress] in order
+   */
+  async submitDeployment(
+    name: string,
+    address: string,
+    artifact: Artifact | Deployment,
+    devdoc: unknown,
+    userdoc: unknown,
+    startingBlock: string | undefined,
+    options: SubmitOptions = {},
+  ): Promise<SubmitResult> {
+    const mbContract = await this.createMBContract(
+      name,
+      artifact,
+      options,
+      devdoc,
+      userdoc,
+    );
+
+    // create a new instance and link it to the deployed contract on MultiBaas
+    let mbAddress = await this.createMultiBaasAddress(
+      address,
       mbContract.label,
       options,
     );
+
     mbAddress = await this.linkContractToAddress(
       mbContract,
       mbAddress,
-      startingBlock,
+      this.normalizeStartingBlock(startingBlock),
+      // String(deployment.receipt!.blockNumber - 1),
     );
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    return { contract, mbContract, mbAddress };
+    return { mbContract, mbAddress };
   }
 
   /**
