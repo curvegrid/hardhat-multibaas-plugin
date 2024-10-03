@@ -1,10 +1,6 @@
 # hardhat-multibaas-plugin
 
-Integrate MultiBaas into your [Hardhat](https://hardhat.org/getting-started/) workflow!
-
-MultiBaas is blockchain middleware that makes it fast and easy to develop, deploy, and operate on the Ethereum and OMG blockchain platforms. This plugin makes it easy to deploy contracts to MultiBaas from within your existing Hardhat workflow. Your DApp can then use the MultiBaas REST API to interact with smart contracts.
-
-For more information on MultiBaas, see our [introductory walkthrough](https://www.curvegrid.com/blog/2020-04-06-multibaas-intro/) and our [developer documentation](https://www.curvegrid.com/docs/).
+This plugin configures [MultiBaas](https://docs.curvegrid.com/multibaas/) with a contract deployed via [Hardhat](https://hardhat.org/getting-started/). You can then manage your smart contract within the MultiBaas web UI and build blockchain applications on top of MultiBaas using its REST API and SDKs. For more information on MultiBaas, see our [introductory walkthrough](https://www.curvegrid.com/blog/2020-04-06-multibaas-intro/) and [development documentation](https://docs.curvegrid.com/multibaas/).
 
 ## Usage
 
