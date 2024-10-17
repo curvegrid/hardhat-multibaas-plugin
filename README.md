@@ -1,6 +1,10 @@
 # hardhat-multibaas-plugin
 
-This plugin configures [MultiBaas](https://docs.curvegrid.com/multibaas/) with a contract deployed via [Hardhat](https://hardhat.org/getting-started/). You can then manage your smart contract within the MultiBaas web UI and build blockchain applications on top of MultiBaas using its REST API and SDKs. For more information on MultiBaas, see our [introductory walkthrough](https://www.curvegrid.com/blog/2020-04-06-multibaas-intro/) and [development documentation](https://docs.curvegrid.com/multibaas/).
+Integrate [MultiBaas](https://docs.curvegrid.com/multibaas/) into your [Hardhat](https://hardhat.org/getting-started/) workflow!
+
+This plugin streamlines your development by automatically adding smart contracts deployed through Hardhat to MultiBaas, reducing manual effort. From there, you can manage your smart contracts via the MultiBaas web UI and build blockchain applications using its REST API and SDKs.
+
+For more details about MultiBaas, check out our [introductory walkthrough](https://www.curvegrid.com/blog/2020-04-06-multibaas-intro/) and [developer documentation](https://docs.curvegrid.com/multibaas/).
 
 ## Usage
 
