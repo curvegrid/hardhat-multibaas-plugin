@@ -31,7 +31,7 @@
     "@nomicfoundation/hardhat-ethers": "^3.0.8",
     "@openzeppelin/hardhat-upgrades": "^3.2.1",
     "axios": "^1.7.7",
-    "ethers": "^6.13.2",
+    "ethers": "^6.13.4",
     "hardhat": "^2.22.8",
     "validator": "^13.12.0"
   },
