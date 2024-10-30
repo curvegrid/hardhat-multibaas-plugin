@@ -9,7 +9,8 @@
     "deploy:metacoin": "HARDHAT_NETWORK=development npx hardhat run scripts/deploy-metacoin.ts",
     "deploy:greeter": "HARDHAT_NETWORK=development npx hardhat run scripts/deploy-greeter.ts",
     "deploy:link:greeter": "HARDHAT_NETWORK=development npx hardhat run scripts/deploy-then-link-greeter.ts",
-    "deploy:proxy:greeter": "HARDHAT_NETWORK=development npx hardhat run scripts/deploy-proxied-greeter.ts"
+    "deploy:proxy:greeter": "HARDHAT_NETWORK=development npx hardhat run scripts/deploy-proxied-greeter.ts",
+    "deploy:all": "npx hardhat clean && npm run deploy:metacoin && npm run deploy:greeter && npm run deploy:link:greeter && npm run deploy:proxy:greeter"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^5.0.0",
