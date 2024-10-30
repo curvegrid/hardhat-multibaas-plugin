@@ -27,3 +27,6 @@ env
 # Config files
 deployment-config.*.js
 !deployment-config.template.js
+
+# TypeScript build info
+*.tsbuildinfo
