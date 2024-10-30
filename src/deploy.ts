@@ -97,14 +97,14 @@ export class MBDeployer implements MBDeployerI {
    */
   private async createMBContract(
     contractName: string,
-    artifact: Artifact,
+    bytecode: string,
+    abi: string,
     options: DeployOptions,
     developerDoc: unknown,
     userDoc: unknown,
   ): Promise<MultiBaasContract> {
     const contractLabel = options.contractLabel ?? contractName.toLowerCase();
     if (contractLabel === undefined) throw new Error("Contract has no name");
-    const bytecode = artifact.bytecode;
 
     let contractVersion: string | null = null;
     if (options.contractVersion !== undefined) {
@@ -187,7 +187,7 @@ export class MBDeployer implements MBDeployerI {
         language: "solidity",
         bin: bytecode,
         // MB expects these to be JSON strings
-        rawAbi: JSON.stringify(artifact.abi),
+        rawAbi: abi,
         developerDoc: JSON.stringify(developerDoc) || "{}",
         userDoc: JSON.stringify(userDoc) || "{}",
         version: contractVersion,
@@ -446,7 +446,8 @@ export class MBDeployer implements MBDeployerI {
     // contract's data to MultiBaas
     const mbContract = await this.createMBContract(
       contractName,
-      artifact,
+      factory.bytecode,
+      JSON.stringify(artifact.abi),
       options,
       contractBuildInfo["devdoc"],
       contractBuildInfo["userdoc"],
@@ -515,7 +516,8 @@ export class MBDeployer implements MBDeployerI {
     // contract's data to MultiBaas
     const mbContract = await this.createMBContract(
       contractName,
-      artifact,
+      factory.bytecode,
+      JSON.stringify(artifact.abi),
       options,
       contractBuildInfo["devdoc"],
       contractBuildInfo["userdoc"],
