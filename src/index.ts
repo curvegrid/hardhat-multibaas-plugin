@@ -17,7 +17,7 @@ import * as types from "hardhat/internal/core/params/argumentTypes";
 export const MULTIBAAS_SUBMIT_TASKNAME = "mb-submit";
 
 task(MULTIBAAS_SUBMIT_TASKNAME)
-  .setDescription("Submit contracts deployed with hardhat-deploy to MutiBaas")
+  .setDescription("Submit contracts deployed with hardhat-deploy to MultiBaas")
   .addOptionalParam(
     "deploymentName",
     "specific deployment name to submit to MultiBaas",
