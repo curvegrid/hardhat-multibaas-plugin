@@ -263,28 +263,28 @@ export class MBDeployer implements MBDeployerI {
       if (e.response.status !== 404) throw e;
     }
 
-    let addressLabel = options.addressAlias;
-    if (addressLabel === undefined) {
-      // Attempt to get an unique addressLabel.
-      const similars: Set<string> = new Set(
+    let addressAlias = options.addressAlias;
+    if (addressAlias === undefined) {
+      // Attempt to get an unique addressAlias.
+      const allAliases: Set<string> = new Set(
         (
           (await this.request(
-            `/chains/ethereum/addresses/similarlabels/${contractLabel}`,
+            `/chains/ethereum/addresses`,
           )) as MultiBaasAddress[]
         ).map((v) => v.alias),
       );
-      if (!similars.has(contractLabel)) addressLabel = contractLabel;
+      if (!allAliases.has(contractLabel)) addressAlias = contractLabel;
       else {
         // Same as how MB frontend does it
         let num = 2;
-        while (similars.has(`${contractLabel}${num}`)) num++;
-        addressLabel = `${contractLabel}${num}`;
+        while (allAliases.has(`${contractLabel}${num}`)) num++;
+        addressAlias = `${contractLabel}${num}`;
       }
     } else {
       // We need to confirm if this address exists.
       try {
         const mbAddress = (await this.request(
-          `/chains/ethereum/addresses/${addressLabel}`,
+          `/chains/ethereum/addresses/${addressAlias}`,
         )) as MultiBaasAddress;
         // Ok it does. And it's different.
         // Does the current network support label modifications?
@@ -295,14 +295,14 @@ export class MBDeployer implements MBDeployerI {
             allowUpdateAddress.indexOf(this.network) === -1)
         ) {
           throw new Error(
-            `MultiBaas: Another address ${mbAddress.address} was created under the label "${addressLabel}"`,
+            `MultiBaas: Another address ${mbAddress.address} was created under the alias "${addressAlias}"`,
           );
         }
         // Modifications allowed. Just... delete it?
         console.log(
           `MultiBaas: Deleting old address ${mbAddress.address} with same label`,
         );
-        await this.request(`/chains/ethereum/addresses/${addressLabel}`, {
+        await this.request(`/chains/ethereum/addresses/${addressAlias}`, {
           method: "DELETE",
         });
       } catch (e) {
@@ -313,13 +313,13 @@ export class MBDeployer implements MBDeployerI {
 
     // Create it
     console.log(
-      `MultiBaas: Creating address ${address} with label "${addressLabel}"`,
+      `MultiBaas: Creating address ${address} with alias "${addressAlias}"`,
     );
     const mbAddress = (await this.request(`/chains/ethereum/addresses`, {
       method: "POST",
       data: {
         address,
-        alias: addressLabel,
+        alias: addressAlias,
       },
     })) as MultiBaasAddress;
 
