@@ -12,7 +12,7 @@ async function main() {
     "ProxiedGreeter",
     ["Hello, world!"],
     {
-      addressLabel: "proxied_greeter",
+      addressAlias: "proxied_greeter",
       contractVersion: "1.0",
       contractLabel: "proxied_greeter",
       constructorArgs: [signer?.address],

@@ -12,7 +12,7 @@ async function main() {
     "Greeter",
     ["Hello, world!"],
     {
-      addressLabel: "greeter",
+      addressAlias: "greeter",
       contractVersion: "1.0",
       contractLabel: "greeter",
     },

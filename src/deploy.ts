@@ -243,18 +243,18 @@ export class MBDeployer implements MBDeployerI {
       const mbAddress = (await this.request(
         `/chains/ethereum/addresses/${address}`,
       )) as MultiBaasAddress;
-      if (mbAddress.label !== "") {
+      if (mbAddress.alias !== "") {
         // If an address already exists, and the user set a different address label
         if (
-          options.addressLabel !== undefined &&
-          options.addressLabel !== mbAddress.label
+          options.addressAlias !== undefined &&
+          options.addressAlias !== mbAddress.alias
         ) {
           throw new Error(
-            `MultiBaas: The address ${address} has already been created under a different label "${mbAddress.label}"`,
+            `MultiBaas: The address ${address} has already been created under a different alias "${mbAddress.alias}"`,
           );
         }
         console.log(
-          `MultiBaas: Address ${address} already created as "${mbAddress.label}"`,
+          `MultiBaas: Address ${address} already created as "${mbAddress.alias}"`,
         );
         return mbAddress;
       }
@@ -263,28 +263,28 @@ export class MBDeployer implements MBDeployerI {
       if (e.response.status !== 404) throw e;
     }
 
-    let addressLabel = options.addressLabel;
-    if (addressLabel === undefined) {
-      // Attempt to get an unique addressLabel.
-      const similars: Set<string> = new Set(
+    let addressAlias = options.addressAlias;
+    if (addressAlias === undefined) {
+      // Attempt to get an unique addressAlias.
+      const allAliases: Set<string> = new Set(
         (
           (await this.request(
-            `/chains/ethereum/addresses/similarlabels/${contractLabel}`,
+            `/chains/ethereum/addresses`,
           )) as MultiBaasAddress[]
-        ).map((v) => v.label),
+        ).map((v) => v.alias),
       );
-      if (!similars.has(contractLabel)) addressLabel = contractLabel;
+      if (!allAliases.has(contractLabel)) addressAlias = contractLabel;
       else {
         // Same as how MB frontend does it
         let num = 2;
-        while (similars.has(`${contractLabel}${num}`)) num++;
-        addressLabel = `${contractLabel}${num}`;
+        while (allAliases.has(`${contractLabel}${num}`)) num++;
+        addressAlias = `${contractLabel}${num}`;
       }
     } else {
       // We need to confirm if this address exists.
       try {
         const mbAddress = (await this.request(
-          `/chains/ethereum/addresses/${addressLabel}`,
+          `/chains/ethereum/addresses/${addressAlias}`,
         )) as MultiBaasAddress;
         // Ok it does. And it's different.
         // Does the current network support label modifications?
@@ -295,14 +295,14 @@ export class MBDeployer implements MBDeployerI {
             allowUpdateAddress.indexOf(this.network) === -1)
         ) {
           throw new Error(
-            `MultiBaas: Another address ${mbAddress.address} was created under the label "${addressLabel}"`,
+            `MultiBaas: Another address ${mbAddress.address} was created under the alias "${addressAlias}"`,
           );
         }
         // Modifications allowed. Just... delete it?
         console.log(
           `MultiBaas: Deleting old address ${mbAddress.address} with same label`,
         );
-        await this.request(`/chains/ethereum/addresses/${addressLabel}`, {
+        await this.request(`/chains/ethereum/addresses/${addressAlias}`, {
           method: "DELETE",
         });
       } catch (e) {
@@ -313,13 +313,13 @@ export class MBDeployer implements MBDeployerI {
 
     // Create it
     console.log(
-      `MultiBaas: Creating address ${address} with label "${addressLabel}"`,
+      `MultiBaas: Creating address ${address} with alias "${addressAlias}"`,
     );
     const mbAddress = (await this.request(`/chains/ethereum/addresses`, {
       method: "POST",
       data: {
         address,
-        label: addressLabel,
+        alias: addressAlias,
       },
     })) as MultiBaasAddress;
 
@@ -338,16 +338,16 @@ export class MBDeployer implements MBDeployerI {
     for (const c of address.contracts) {
       if (c.label === contract.label && c.version === contract.version) {
         console.log(
-          `MultiBaas: Contract "${contract.label} ${contract.version}" is already linked to address "${address.label}"`,
+          `MultiBaas: Contract "${contract.label} ${contract.version}" is already linked to address "${address.alias}"`,
         );
         return address;
       }
     }
     console.log(
-      `MultiBaas: Linking contract "${contract.label} ${contract.version}" to address "${address.label}"`,
+      `MultiBaas: Linking contract "${contract.label} ${contract.version}" to address "${address.alias}"`,
     );
     const mbAddress = (await this.request(
-      `/chains/ethereum/addresses/${address.label}/contracts`,
+      `/chains/ethereum/addresses/${address.alias}/contracts`,
       {
         method: "POST",
         data: {

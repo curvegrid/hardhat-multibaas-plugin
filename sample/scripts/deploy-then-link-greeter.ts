@@ -16,7 +16,7 @@ async function main() {
     "Greeter",
     await contract.getAddress(),
     {
-      addressLabel: "linked_greeter",
+      addressAlias: "linked_greeter",
       contractVersion: "1.0",
       contractLabel: "greeter",
     },

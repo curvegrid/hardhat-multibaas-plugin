@@ -15,7 +15,7 @@ async function main() {
       // we don't want to deploy multiple contracts into MultiBaas
       {
         contractVersion: "1.0",
-        addressLabel: "convertlib",
+        addressAlias: "convertlib",
         contractLabel: "convertlib",
       },
     )
@@ -34,7 +34,7 @@ async function main() {
     // we don't want to deploy multiple contracts into MultiBaas
     {
       contractVersion: "1.0",
-      addressLabel: "metacoin",
+      addressAlias: "metacoin",
       contractLabel: "metacoin",
       startingBlock: "0",
     },
