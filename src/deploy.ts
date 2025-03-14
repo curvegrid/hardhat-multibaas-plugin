@@ -243,18 +243,18 @@ export class MBDeployer implements MBDeployerI {
       const mbAddress = (await this.request(
         `/chains/ethereum/addresses/${address}`,
       )) as MultiBaasAddress;
-      if (mbAddress.label !== "") {
+      if (mbAddress.alias !== "") {
         // If an address already exists, and the user set a different address label
         if (
           options.addressLabel !== undefined &&
-          options.addressLabel !== mbAddress.label
+          options.addressLabel !== mbAddress.alias
         ) {
           throw new Error(
-            `MultiBaas: The address ${address} has already been created under a different label "${mbAddress.label}"`,
+            `MultiBaas: The address ${address} has already been created under a different label "${mbAddress.alias}"`,
           );
         }
         console.log(
-          `MultiBaas: Address ${address} already created as "${mbAddress.label}"`,
+          `MultiBaas: Address ${address} already created as "${mbAddress.alias}"`,
         );
         return mbAddress;
       }
@@ -271,7 +271,7 @@ export class MBDeployer implements MBDeployerI {
           (await this.request(
             `/chains/ethereum/addresses/similarlabels/${contractLabel}`,
           )) as MultiBaasAddress[]
-        ).map((v) => v.label),
+        ).map((v) => v.alias),
       );
       if (!similars.has(contractLabel)) addressLabel = contractLabel;
       else {
@@ -319,7 +319,7 @@ export class MBDeployer implements MBDeployerI {
       method: "POST",
       data: {
         address,
-        label: addressLabel,
+        alias: addressLabel,
       },
     })) as MultiBaasAddress;
 
@@ -338,16 +338,16 @@ export class MBDeployer implements MBDeployerI {
     for (const c of address.contracts) {
       if (c.label === contract.label && c.version === contract.version) {
         console.log(
-          `MultiBaas: Contract "${contract.label} ${contract.version}" is already linked to address "${address.label}"`,
+          `MultiBaas: Contract "${contract.label} ${contract.version}" is already linked to address "${address.alias}"`,
         );
         return address;
       }
     }
     console.log(
-      `MultiBaas: Linking contract "${contract.label} ${contract.version}" to address "${address.label}"`,
+      `MultiBaas: Linking contract "${contract.label} ${contract.version}" to address "${address.alias}"`,
     );
     const mbAddress = (await this.request(
-      `/chains/ethereum/addresses/${address.label}/contracts`,
+      `/chains/ethereum/addresses/${address.alias}/contracts`,
       {
         method: "POST",
         data: {

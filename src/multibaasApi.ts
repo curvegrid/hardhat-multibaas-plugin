@@ -54,7 +54,7 @@ export interface MultiBaasContract {
  * A MultiBaas address interface.
  */
 export interface MultiBaasAddress {
-  label: string;
+  alias: string;
   address: string;
   balance: string;
   chain: string;
