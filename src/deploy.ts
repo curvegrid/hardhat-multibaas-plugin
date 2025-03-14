@@ -246,11 +246,11 @@ export class MBDeployer implements MBDeployerI {
       if (mbAddress.alias !== "") {
         // If an address already exists, and the user set a different address label
         if (
-          options.addressLabel !== undefined &&
-          options.addressLabel !== mbAddress.alias
+          options.addressAlias !== undefined &&
+          options.addressAlias !== mbAddress.alias
         ) {
           throw new Error(
-            `MultiBaas: The address ${address} has already been created under a different label "${mbAddress.alias}"`,
+            `MultiBaas: The address ${address} has already been created under a different alias "${mbAddress.alias}"`,
           );
         }
         console.log(
@@ -263,7 +263,7 @@ export class MBDeployer implements MBDeployerI {
       if (e.response.status !== 404) throw e;
     }
 
-    let addressLabel = options.addressLabel;
+    let addressLabel = options.addressAlias;
     if (addressLabel === undefined) {
       // Attempt to get an unique addressLabel.
       const similars: Set<string> = new Set(
