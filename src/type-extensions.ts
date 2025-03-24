@@ -67,12 +67,12 @@ export interface DeployOptions {
    */
   contractVersion?: string;
   /**
-   * Overwrite the default address label. If set and a duplicate is found,
+   * Overwrite the default address alias. If set and a duplicate is found,
    * the address is instead updated (or returned with an error, chosen by global setting `allowUpdateAddress`).
    *
-   * The auto-generated address label is never a duplicate.
+   * The auto-generated address alias is never a duplicate.
    */
-  addressLabel?: string;
+  addressAlias?: string;
 
   /**
    * Override the default deploy transaction arguments
@@ -118,7 +118,7 @@ declare module "hardhat/types/config" {
    * @field host the MultiBaas instance's host URL
    * @field apiKey the API key used to deploy a smart contract
    * @field allowUpdateAddress a list of networks that support overriding an address
-   * if there exists an address on MultiBaas with the same label.
+   * if there exists an address on MultiBaas with the same alias.
    * @field allowUpdateContract a list of networks that support overriding a contract
    * if there exists a contract on MultiBaas with the same (label, version) but
    * different bytecode. */
