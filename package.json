@@ -33,12 +33,12 @@
     "axios": "^1.7.7",
     "ethers": "^6.13.4",
     "hardhat": "^2.22.15",
-    "validator": "^13.12.0"
+    "validator": "^13.15.0"
   },
   "devDependencies": {
     "@types/fs-extra": "^11.0.4",
     "@types/node": "^22.8.4",
-    "@types/validator": "^13.12.2",
+    "@types/validator": "^13.12.3",
     "@typescript-eslint/eslint-plugin": "^8.12.2",
     "@typescript-eslint/parser": "^8.12.2",
     "eslint": "^9.13.0",
