@@ -4,6 +4,9 @@
   "version": "1.0.0",
   "author": "Curvegrid",
   "license": "MIT",
+  "engines": {
+    "node": ">=24.0.0"
+  },
   "scripts": {
     "test": "npx hardhat test",
     "deploy:metacoin": "HARDHAT_NETWORK=development npx hardhat run scripts/deploy-metacoin.ts",
