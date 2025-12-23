@@ -1,4 +1,3 @@
-node_modules
 artifacts
 cache
 typechain
@@ -8,5 +7,5 @@ coverage.json
 .env
 .DS_Store
 ignition/deployments
-deployment-config.*.js
-!deployment-config.template.js
+deployment-config.*.ts
+!deployment-config.template.ts
