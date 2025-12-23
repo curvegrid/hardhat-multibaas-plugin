@@ -1,10 +1,16 @@
-const typescriptEslint = require("@typescript-eslint/eslint-plugin");
-const typescriptEslintParser = require("@typescript-eslint/parser");
-const importPlugin = require("eslint-plugin-import");
-const eslintComments = require("eslint-plugin-eslint-comments");
-const prettier = require("eslint-plugin-prettier");
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
-module.exports = [
+import typescriptEslint from "@typescript-eslint/eslint-plugin";
+import typescriptEslintParser from "@typescript-eslint/parser";
+import importPlugin from "eslint-plugin-import";
+import eslintComments from "eslint-plugin-eslint-comments";
+import prettier from "eslint-plugin-prettier";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+export default [
   {
     languageOptions: {
       parser: typescriptEslintParser,
