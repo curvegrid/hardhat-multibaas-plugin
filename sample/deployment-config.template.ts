@@ -1,4 +1,4 @@
-const deploymentConfig = {
+export const deploymentConfig = {
   // Private key of the deployer account, beginning with 0x
   deployerPrivateKey: '0x0000000000000000000000000000000000000000000000000000000000000000',
 
@@ -20,6 +20,4 @@ const deploymentConfig = {
   adminApiKey: '<API KEY IN ADMINISTRATOR GROUP>',
 };
 
-module.exports = {
-  deploymentConfig,
-};
+export default deploymentConfig;
