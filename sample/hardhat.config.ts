@@ -46,7 +46,4 @@ export default defineConfig({
     allowUpdateAddress: ["development"],
     allowUpdateContract: ["development"],
   },
-  ignition: {
-    requiredConfirmations: 1,
-  },
 });
