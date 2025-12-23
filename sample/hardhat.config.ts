@@ -1,20 +1,18 @@
 import { defineConfig } from "hardhat/config";
 import hardhatMultiBaasPlugin from "hardhat-multibaas-plugin";
 import path from "node:path";
-import { createRequire } from "node:module";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 
-const require = createRequire(import.meta.url);
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const networkName = process.env.HARDHAT_NETWORK ?? "development";
 const configPath = path.resolve(
   __dirname,
-  `./deployment-config.${networkName}.js`,
+  `./deployment-config.${networkName}.ts`,
 );
 
-const { deploymentConfig } = require(configPath) as {
+const { deploymentConfig } = (await import(pathToFileURL(configPath).href)) as {
   deploymentConfig: {
     deploymentEndpoint: string;
     ethChainID: number;
