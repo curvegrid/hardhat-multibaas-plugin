@@ -45,8 +45,7 @@
     "@nomicfoundation/ignition-core": "^3.0.0"
   },
   "lint-staged": {
-    "*.{js,ts}": "eslint --fix",
-    "*.json": "prettier --write"
+    "src/**/*.{ts,js}": "eslint --fix"
   },
   "devDependencies": {
     "@types/node": "^24.0.0",
