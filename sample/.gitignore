@@ -8,3 +8,5 @@ coverage.json
 .env
 .DS_Store
 ignition/deployments
+deployment-config.*.js
+!deployment-config.template.js

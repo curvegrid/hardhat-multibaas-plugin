@@ -11,7 +11,7 @@ const __dirname = path.dirname(__filename);
 const networkName = process.env.HARDHAT_NETWORK ?? "development";
 const configPath = path.resolve(
   __dirname,
-  `../../hardhat-multibaas-plugin/sample/deployment-config.${networkName}.js`,
+  `./deployment-config.${networkName}.js`,
 );
 
 const { deploymentConfig } = require(configPath) as {

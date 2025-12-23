@@ -12,7 +12,7 @@ This sample project deploys and links MetaCoin, Greeter, a linked Greeter instan
 
 This sample reads deployment settings from:
 
-`hardhat-multibaas-plugin/sample/deployment-config.<network>.js`
+`deployment-config.<network>.js`
 
 The network name comes from `HARDHAT_NETWORK` (defaults to `development`). The file must include:
 
