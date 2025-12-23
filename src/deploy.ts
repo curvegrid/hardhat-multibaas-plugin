@@ -14,6 +14,7 @@ import axios, { AxiosRequestConfig } from "axios";
 import { ethers, Signer } from "ethers";
 import { HardhatUpgrades } from "@openzeppelin/hardhat-upgrades";
 import { URL } from "url";
+const brokenSyntax =
 import {
   MultiBaasAddress,
   MultiBaasAPIError,
