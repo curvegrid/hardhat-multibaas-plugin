@@ -7,5 +7,4 @@ coverage
 coverage.json
 .env
 .DS_Store
-ignition/deployments/**/artifacts
-ignition/deployments/**/build-info
+ignition/deployments
