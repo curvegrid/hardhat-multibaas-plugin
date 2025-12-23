@@ -1,0 +1,30 @@
+name: Publish
+
+on:
+  release:
+    types: [published]
+
+env:
+  NODE_VER: "24"
+
+jobs:
+  publish:
+    name: Publish
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: "${{ env.NODE_VER }}"
+        registry-url: https://registry.npmjs.org/
+    - name: Install Deps
+      run: npm install
+    - name: Build
+      run: npm run build
+    - name: Publish
+      env:
+        NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+      run: npm publish --access public
