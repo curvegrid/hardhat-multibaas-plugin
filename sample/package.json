@@ -1,0 +1,26 @@
+{
+  "name": "hardhat-multibaas-plugin-sample-v3",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Sample Hardhat v3 project for hardhat-multibaas-plugin",
+  "type": "module",
+  "engines": {
+    "node": ">=24.0.0"
+  },
+  "scripts": {
+    "deploy:metacoin": "HARDHAT_NETWORK=development npx hardhat ignition deploy ignition/modules/MetaCoinModule.ts",
+    "deploy:greeter": "HARDHAT_NETWORK=development npx hardhat ignition deploy ignition/modules/GreeterModule.ts",
+    "deploy:link:greeter": "HARDHAT_NETWORK=development npx hardhat ignition deploy ignition/modules/LinkedGreeterModule.ts",
+    "deploy:proxy:greeter": "HARDHAT_NETWORK=development npx hardhat ignition deploy ignition/modules/ProxiedGreeterModule.ts",
+    "deploy:all": "npx hardhat clean && npm run deploy:metacoin && npm run deploy:greeter && npm run deploy:link:greeter && npm run deploy:proxy:greeter"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-ignition": "^3.0.0",
+    "@openzeppelin/contracts": "^5.0.1",
+    "@openzeppelin/contracts-upgradeable": "^5.1.0",
+    "@types/node": "^24.0.0",
+    "hardhat": "^3.0.0",
+    "hardhat-multibaas-plugin": "..",
+    "typescript": "^5.6.3"
+  }
+}

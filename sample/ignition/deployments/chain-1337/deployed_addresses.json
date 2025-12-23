@@ -1,0 +1,6 @@
+{
+  "ProxiedGreeterModule#ProxiedGreeter": "0x0FeD7e258464f7129b420523605674d86c82fd27",
+  "ProxiedGreeterModule#TransparentUpgradeableProxy": "0x0433B94021f9576F1b6155d986CBdc489fD1a2F3",
+  "ProxiedGreeterModule#ProxiedGreeterProxy": "0x0433B94021f9576F1b6155d986CBdc489fD1a2F3",
+  "ProxiedGreeterModule#ProxyAdmin": "0x3dB77Edd701f3633f6ff7C637B2C99645b594f7F"
+}
