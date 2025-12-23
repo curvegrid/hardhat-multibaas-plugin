@@ -1,6 +1,6 @@
 {
   "name": "hardhat-multibaas-plugin",
-  "version": "3.0.0",
+  "version": "2.0.0",
   "description": "Hardhat v3 MultiBaas plugin using Ignition",
   "license": "MIT",
   "author": "Curvegrid",
