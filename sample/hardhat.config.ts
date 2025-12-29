@@ -1,5 +1,5 @@
 import { defineConfig } from "hardhat/config";
-import hardhatIgnition from "@nomicfoundation/hardhat-ignition";
+import "@nomicfoundation/hardhat-ignition";
 import hardhatMultiBaasPlugin from "hardhat-multibaas-plugin";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
@@ -24,7 +24,7 @@ const { deploymentConfig } = (await import(pathToFileURL(configPath).href)) as {
 };
 
 export default defineConfig({
-  plugins: [hardhatIgnition, hardhatMultiBaasPlugin],
+  plugins: [hardhatMultiBaasPlugin],
   solidity: {
     version: "0.8.28",
     npmFilesToBuild: [
