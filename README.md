@@ -97,3 +97,9 @@ mb.link(proxiedGreeter, { contractLabel: "proxied_greeter" });
 ```bash
 npm run build
 ```
+
+## Using Legacy Hardhat v2
+
+If you want to work with legacy Hardhat v2, refer to the following branch.
+
+https://github.com/curvegrid/hardhat-multibaas-plugin/tree/legacy/hardhat-v2
