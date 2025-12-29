@@ -65,5 +65,6 @@ npm run deploy:proxy:greeter
 - `ignition deploy` is overridden by the plugin to upload artifacts and link any futures registered via `mb.link`.
 - The expected MultiBaas API call sequence should match the v2 baseline logs in `supplementary/multibaas_logs.txt`.
 - Two Ignition variables to avoid interactive prompts:
-  - `HARDHAT_IGNITION_CONFIRM_DEPLOYMENT=false` skips the confirmation shown when deploying to non-local networks.
-  - `HARDHAT_IGNITION_CONFIRM_RESET=false` skips the confirmation shown when overwriting a previous deployment with `--reset`.
+  - [`HARDHAT_IGNITION_CONFIRM_DEPLOYMENT=false`](https://hardhat.org/ignition/docs/reference/environment-variables) skips the confirmation shown when deploying to non-local networks.
+  - [`HARDHAT_IGNITION_CONFIRM_RESET=false`](https://hardhat.org/ignition/docs/reference/environment-variables) skips the confirmation shown when overwriting a previous deployment with `--reset`.
+- The deploy scripts include [`--reset`](https://hardhat.org/ignition/docs/guides/modifications#clearing-an-existing-deployment-with-reset) to force redeployments when artifacts have changed.
