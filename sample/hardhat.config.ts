@@ -1,4 +1,5 @@
 import { defineConfig } from "hardhat/config";
+import hardhatIgnition from "@nomicfoundation/hardhat-ignition";
 import hardhatMultiBaasPlugin from "hardhat-multibaas-plugin";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
@@ -23,13 +24,16 @@ const { deploymentConfig } = (await import(pathToFileURL(configPath).href)) as {
 };
 
 export default defineConfig({
-  plugins: [hardhatMultiBaasPlugin],
+  plugins: [hardhatIgnition, hardhatMultiBaasPlugin],
   solidity: {
     version: "0.8.28",
     npmFilesToBuild: [
       "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol",
       "@openzeppelin/contracts/proxy/transparent/ProxyAdmin.sol",
     ],
+  },
+  ignition: {
+    requiredConfirmations: 1,
   },
   networks: {
     development: {
