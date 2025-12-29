@@ -9,11 +9,15 @@ import {
 import { MultiBaasClient } from "../multibaas/client.js";
 import { getRegisteredLinks, resetRegistry } from "../registry.js";
 
+// Hardhat task override that runs Ignition deployments and then registers
+// the deployed contracts with MultiBaas when links were queued via our registry.
+
 const taskAction: TaskOverrideActionFunction = async (
   taskArgs,
   hre: HardhatRuntimeEnvironment,
   runSuper,
 ) => {
+  // Clear any previous link registrations before running the underlying task.
   resetRegistry();
 
   const result = await runSuper(taskArgs);
@@ -24,6 +28,7 @@ const taskAction: TaskOverrideActionFunction = async (
 
   const successfulResult = result as SuccessfulDeploymentResult;
 
+  // If no links were registered during deployment, nothing to sync to MultiBaas.
   const links = getRegisteredLinks();
   if (links.length === 0) {
     return result;
@@ -38,6 +43,7 @@ const taskAction: TaskOverrideActionFunction = async (
 
   await mbClient.setup();
 
+  // Build a lookup so library addresses can be passed to MultiBaas.
   const libraryAddresses: Record<string, string> = {};
   for (const contract of Object.values(successfulResult.contracts)) {
     libraryAddresses[contract.contractName] = contract.address;

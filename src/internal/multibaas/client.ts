@@ -19,6 +19,8 @@ import type {
 
 const DEFAULT_STARTING_BLOCK = "-100";
 
+// Thin helper around the MultiBaas SDK that creates contracts, addresses, and
+// links them together using Hardhat artifacts produced by Ignition.
 export class MultiBaasClient {
   private readonly _contractsApi: ContractsApi;
   private readonly _addressesApi: AddressesApi;
@@ -47,6 +49,7 @@ export class MultiBaasClient {
   }
 
   async setup(): Promise<void> {
+    // Verify connectivity and credentials up front.
     await this._chainsApi.getChainStatus();
   }
 
@@ -56,6 +59,7 @@ export class MultiBaasClient {
     options: MultiBaasLinkOptions = {},
     libraryAddresses: Record<string, string> = {},
   ): Promise<void> {
+    // Create/lookup contract + address and ensure they are linked in MultiBaas.
     const contract = await this._ensureContract(
       contractName,
       options,
@@ -74,6 +78,7 @@ export class MultiBaasClient {
     options: MultiBaasLinkOptions,
     libraryAddresses: Record<string, string> = {},
   ): Promise<Contract> {
+    // Load ABI/docs/bytecode from Hardhat outputs and reuse matching versions when possible.
     const { artifact, devdoc, userdoc, metadata } =
       await this._loadArtifactDocs(contractName);
     const bytecode = this._resolveBytecode(artifact, libraryAddresses);
@@ -167,6 +172,7 @@ export class MultiBaasClient {
     artifact: Artifact,
     libraryAddresses: Record<string, string>,
   ): string {
+    // Link library placeholders with provided addresses; warn and zero-fill if missing.
     const normalizedBytecode = stripHexPrefix(artifact.bytecode);
     const references = artifact.linkReferences;
     if (Object.keys(references).length === 0) {
@@ -209,6 +215,7 @@ export class MultiBaasClient {
     contractLabel: string,
     options: MultiBaasLinkOptions,
   ): Promise<Address> {
+    // Reuse existing address entries when allowed; otherwise create or replace aliases.
     const existingByAddress = await this._tryGetAddress(address);
     if (existingByAddress !== undefined && existingByAddress.alias !== "") {
       if (
@@ -266,6 +273,7 @@ export class MultiBaasClient {
     address: Address,
     startingBlock?: string,
   ): Promise<Address> {
+    // Attach a contract version to an address if not already linked.
     const normalizedStartingBlock =
       startingBlock === undefined ? DEFAULT_STARTING_BLOCK : startingBlock;
 
