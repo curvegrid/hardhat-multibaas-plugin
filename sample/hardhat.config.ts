@@ -33,7 +33,7 @@ export default defineConfig({
     ],
   },
   ignition: {
-    requiredConfirmations: 1,
+    requiredConfirmations: networkName === "development" ? 1  : 5,
   },
   networks: {
     development: {
