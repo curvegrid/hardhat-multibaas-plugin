@@ -33,7 +33,9 @@ export default defineConfig({
     ],
   },
   ignition: {
-    requiredConfirmations: networkName === "development" ? 1  : 5,
+    // CAUTION: suitable for development environments only with on-demand block production
+    // https://hardhat.org/ignition/docs/reference/config#requiredconfirmations
+    requiredConfirmations: 1,
   },
   networks: {
     development: {
