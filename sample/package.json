@@ -8,7 +8,7 @@
     "node": ">=24.0.0"
   },
   "scripts": {
-    "deploy:base": "HARDHAT_NETWORK=development HARDHAT_IGNITION_CONFIRM_DEPLOYMENT=false HARDHAT_IGNITION_CONFIRM_RESET=false npx hardhat ignition deploy --reset",
+    "deploy:base": "HARDHAT_NETWORK=development HARDHAT_IGNITION_CONFIRM_DEPLOYMENT=false npx hardhat ignition deploy",
     "deploy:metacoin": "npm run deploy:base -- ignition/modules/MetaCoinModule.ts",
     "deploy:greeter": "npm run deploy:base -- ignition/modules/GreeterModule.ts",
     "deploy:link:greeter": "npm run deploy:base -- ignition/modules/LinkedGreeterModule.ts",
