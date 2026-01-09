@@ -1,4 +1,4 @@
-import assert from "node:assert/strict";
+import { expect } from "chai";
 import { network } from "hardhat";
 
 const { ethers } = await network.connect();
@@ -13,12 +13,12 @@ describe("Greeter", function () {
   it("returns the greeting and can update it", async function () {
     const greeter = await deployGreeter();
 
-    assert.equal(await greeter.greet(), "Hello, world!");
+    expect(await greeter.greet()).to.equal("Hello, world!");
 
     const tx = await greeter.setGreeting("Hola, mundo!");
     await tx.wait();
 
-    assert.equal(await greeter.greet(), "Hola, mundo!");
+    expect(await greeter.greet()).to.equal("Hola, mundo!");
   });
 });
 
@@ -42,7 +42,7 @@ describe("MetaCoin", function () {
     const [account1] = await ethers.getSigners();
     const metaCoin = await deployMetaCoin();
 
-    assert.equal(await metaCoin.getBalance(account1.address), 10000n);
+    expect(await metaCoin.getBalance(account1.address)).to.equal(10000n);
   });
 
   it("uses the linked ConvertLib library", async function () {
@@ -50,8 +50,7 @@ describe("MetaCoin", function () {
     const metaCoin = await deployMetaCoin();
 
     const balance = await metaCoin.getBalance(account1.address);
-    assert.equal(
-      await metaCoin.getBalanceInEth(account1.address),
+    expect(await metaCoin.getBalanceInEth(account1.address)).to.equal(
       balance * 2n,
     );
   });
@@ -76,8 +75,8 @@ describe("MetaCoin", function () {
     const accountOneEndingBalance = await metaCoin.getBalance(account1.address);
     const accountTwoEndingBalance = await metaCoin.getBalance(account2.address);
 
-    assert.equal(accountOneEndingBalance, accountOneStartingBalance - amount);
-    assert.equal(accountTwoEndingBalance, accountTwoStartingBalance + amount);
+    expect(accountOneEndingBalance).to.equal(accountOneStartingBalance - amount);
+    expect(accountTwoEndingBalance).to.equal(accountTwoStartingBalance + amount);
   });
 });
 
@@ -112,11 +111,11 @@ describe("ProxiedGreeter", function () {
       await deployProxiedGreeter("Hello, world!");
     const greeter = proxiedGreeter.connect(user);
 
-    assert.equal(await greeter.greet(), "Hello, world!");
+    expect(await greeter.greet()).to.equal("Hello, world!");
 
     const tx = await greeter.setGreeting("Hola, mundo!");
     await tx.wait();
 
-    assert.equal(await greeter.greet(), "Hola, mundo!");
+    expect(await greeter.greet()).to.equal("Hola, mundo!");
   });
 });

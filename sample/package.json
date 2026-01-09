@@ -23,6 +23,7 @@
     "@openzeppelin/contracts": "^5.0.1",
     "@openzeppelin/contracts-upgradeable": "^5.1.0",
     "@types/node": "^24.0.0",
+    "chai": "^5.1.2",
     "hardhat": "^3.0.0",
     "hardhat-multibaas-plugin": "..",
     "mocha": "^11.0.0",
