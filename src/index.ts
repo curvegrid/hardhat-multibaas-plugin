@@ -20,4 +20,8 @@ const hardhatMultiBaasPlugin: HardhatPlugin = {
 };
 
 export default hardhatMultiBaasPlugin;
-export type { MBConfig, MBConfigUserConfig, MultiBaasLinkOptions } from "./types.js";
+export type {
+  MBConfig,
+  MBConfigUserConfig,
+  MultiBaasLinkOptions,
+} from "./types.js";

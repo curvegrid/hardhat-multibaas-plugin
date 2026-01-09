@@ -11,11 +11,7 @@ import {
 import { readFile } from "node:fs/promises";
 
 import type { MBConfig, MultiBaasLinkOptions } from "../../types.js";
-import type {
-  Address,
-  BaseContract,
-  Contract,
-} from "@curvegrid/multibaas-sdk";
+import type { Address, BaseContract, Contract } from "@curvegrid/multibaas-sdk";
 
 const DEFAULT_STARTING_BLOCK = "-100";
 
@@ -120,7 +116,10 @@ export class MultiBaasClient {
           console.log(
             `MultiBaas: Contract "${existing.contractName} ${existing.version}" already created. Skipping creation.`,
           );
-          this._contractCache.set(`${contractLabel}@${contractVersion}`, existing);
+          this._contractCache.set(
+            `${contractLabel}@${contractVersion}`,
+            existing,
+          );
           return existing;
         }
       }
@@ -279,7 +278,8 @@ export class MultiBaasClient {
 
     if (
       address.contracts.some(
-        (item) => item.label === contract.label && item.version === contract.version,
+        (item) =>
+          item.label === contract.label && item.version === contract.version,
       )
     ) {
       console.log(
@@ -404,7 +404,8 @@ export class MultiBaasClient {
       return { artifact };
     }
 
-    const outputPath = await this._artifacts.getBuildInfoOutputPath(buildInfoId);
+    const outputPath =
+      await this._artifacts.getBuildInfoOutputPath(buildInfoId);
     if (outputPath === undefined) {
       return { artifact };
     }

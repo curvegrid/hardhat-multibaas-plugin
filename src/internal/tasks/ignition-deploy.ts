@@ -27,7 +27,10 @@ const taskAction: TaskOverrideActionFunction = async (
 
   const result = await runSuper(taskArgs);
 
-  if (result === null || result?.type !== DeploymentResultType.SUCCESSFUL_DEPLOYMENT) {
+  if (
+    result === null ||
+    result?.type !== DeploymentResultType.SUCCESSFUL_DEPLOYMENT
+  ) {
     return result;
   }
 

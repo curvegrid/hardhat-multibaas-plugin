@@ -34,7 +34,7 @@
     "prepare": "husky",
     "build": "tsc --build",
     "clean": "rm -rf dist",
-    "fix": "eslint --fix '{*,**/*}.{js,ts}'",
+    "lint": "eslint --fix src",
     "test": "npm run build && node --import tsx/esm --test \"test/**/*.test.ts\""
   },
   "dependencies": {
