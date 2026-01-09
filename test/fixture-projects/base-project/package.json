@@ -1,0 +1,5 @@
+{
+  "name": "hardhat-multibaas-plugin-fixture",
+  "private": true,
+  "type": "module"
+}

@@ -1,0 +1,154 @@
+import assert from "node:assert/strict";
+import { describe, it } from "node:test";
+
+import {
+  resolveUserConfig,
+  validateUserConfig,
+} from "../dist/internal/hook-handlers/config.js";
+
+const resolveConfigurationVariable = (value) => ({
+  get: async () => `resolved:${String(value)}`,
+  getUrl: async () => `resolved-url:${String(value)}`,
+});
+
+describe("mbConfig validation", () => {
+  it("requires mbConfig", async () => {
+    const errors = await validateUserConfig({});
+
+    assert.deepEqual(errors, [
+      {
+        path: ["mbConfig"],
+        message:
+          "MultiBaas config is required. Add mbConfig to your Hardhat config.",
+      },
+    ]);
+  });
+
+  it("rejects non-object mbConfig values", async () => {
+    const errors = await validateUserConfig({
+      mbConfig: "invalid",
+    });
+
+    assert.deepEqual(errors, [
+      {
+        path: ["mbConfig"],
+        message: "mbConfig must be an object.",
+      },
+    ]);
+  });
+
+  it("requires host and apiKey", async () => {
+    const errors = await validateUserConfig({
+      mbConfig: {},
+    });
+
+    assert.deepEqual(errors, [
+      {
+        path: ["mbConfig", "host"],
+        message: "mbConfig.host is required.",
+      },
+      {
+        path: ["mbConfig", "apiKey"],
+        message: "mbConfig.apiKey is required.",
+      },
+    ]);
+  });
+
+  it("rejects non-string allowUpdate entries", async () => {
+    const errors = await validateUserConfig({
+      mbConfig: {
+        host: "http://example.com",
+        apiKey: "key",
+        allowUpdateAddress: ["development", 123],
+        allowUpdateContract: [false],
+      },
+    });
+
+    assert.deepEqual(errors, [
+      {
+        path: ["mbConfig", "allowUpdateAddress"],
+        message: "mbConfig.allowUpdateAddress must be an array of strings.",
+      },
+      {
+        path: ["mbConfig", "allowUpdateContract"],
+        message: "mbConfig.allowUpdateContract must be an array of strings.",
+      },
+    ]);
+  });
+
+  it("accepts valid mbConfig", async () => {
+    const errors = await validateUserConfig({
+      mbConfig: {
+        host: "http://example.com",
+        apiKey: "key",
+        allowUpdateAddress: ["development"],
+        allowUpdateContract: [],
+      },
+    });
+
+    assert.equal(errors.length, 0);
+  });
+});
+
+describe("mbConfig resolution", () => {
+  it("returns the next config when mbConfig is missing", async () => {
+    const baseConfig = { base: true };
+    const resolved = await resolveUserConfig(
+      {},
+      resolveConfigurationVariable,
+      async () => baseConfig,
+    );
+
+    assert.strictEqual(resolved, baseConfig);
+  });
+
+  it("throws when host or apiKey are missing", async () => {
+    await assert.rejects(
+      () =>
+        resolveUserConfig(
+          { mbConfig: { host: "http://example.com" } },
+          resolveConfigurationVariable,
+          async () => ({}),
+        ),
+      /mbConfig\.host and mbConfig\.apiKey are required/,
+    );
+  });
+
+  it("resolves mbConfig defaults and values", async () => {
+    const resolved = await resolveUserConfig(
+      {
+        mbConfig: {
+          host: "http://example.com",
+          apiKey: "key",
+        },
+      },
+      resolveConfigurationVariable,
+      async () => ({ resolvedBase: true }),
+    );
+
+    assert.deepEqual(resolved.mbConfig, {
+      host: "resolved-url:http://example.com",
+      apiKey: "resolved:key",
+      allowUpdateAddress: [],
+      allowUpdateContract: [],
+    });
+  });
+
+  it("preserves allowUpdate arrays", async () => {
+    const resolved = await resolveUserConfig(
+      {
+        mbConfig: {
+          host: "http://example.com",
+          apiKey: "key",
+          allowUpdateAddress: ["dev"],
+          allowUpdateContract: ["dev"],
+        },
+      },
+      resolveConfigurationVariable,
+      async () => ({}),
+    );
+
+    assert.deepEqual(resolved.mbConfig.allowUpdateAddress, ["dev"]);
+    assert.deepEqual(resolved.mbConfig.allowUpdateContract, ["dev"]);
+  });
+});

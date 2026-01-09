@@ -34,7 +34,8 @@
     "prepare": "husky",
     "build": "tsc --build",
     "clean": "rm -rf dist",
-    "fix": "eslint --fix '{*,**/*}.{js,ts}'"
+    "fix": "eslint --fix '{*,**/*}.{js,ts}'",
+    "test": "npm run build && node --import tsx/esm --test \"test/**/*.test.ts\""
   },
   "dependencies": {
     "@curvegrid/multibaas-sdk": "1.1.0"
@@ -59,6 +60,7 @@
     "husky": "^9.1.6",
     "lint-staged": "^15.2.10",
     "prettier": "^3.3.3",
+    "tsx": "^4.19.3",
     "typescript": "^5.6.3"
   }
 }
