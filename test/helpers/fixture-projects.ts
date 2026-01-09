@@ -10,7 +10,7 @@ import {
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-export async function createFixtureProjectHRE(fixtureProjectName) {
+export async function createFixtureProjectHRE(fixtureProjectName: string) {
   const fixtureProjectRoot = path.resolve(
     __dirname,
     `../fixture-projects/${fixtureProjectName}`,
