@@ -5,11 +5,20 @@ import {
   resolveUserConfig,
   validateUserConfig,
 } from "../dist/internal/hook-handlers/config.js";
+import type { ConfigurationVariableResolver } from "hardhat/types/config";
 
-const resolveConfigurationVariable = (value) => ({
-  get: async () => `resolved:${String(value)}`,
-  getUrl: async () => `resolved-url:${String(value)}`,
-});
+const resolveConfigurationVariable: ConfigurationVariableResolver = (value) => {
+  const resolvedValue = String(value);
+
+  return {
+    _type: "ResolvedConfigurationVariable",
+    format: "string",
+    get: async () => `resolved:${resolvedValue}`,
+    getUrl: async () => `resolved-url:${resolvedValue}`,
+    getBigInt: async () => BigInt(0),
+    getHexString: async () => "0x0",
+  };
+};
 
 describe("mbConfig validation", () => {
   it("requires mbConfig", async () => {
