@@ -32,6 +32,12 @@ export default [
       ...eslintComments.configs.recommended.rules,
       ...prettier.configs.recommended.rules,
     },
-    ignores: ["eslint.config.js", "node_modules/*", "sample/*", "lib/*"],
+    ignores: [
+      "eslint.config.js",
+      "node_modules/*",
+      "sample/*",
+      "lib/*",
+      "test/*",
+    ],
   },
 ];
