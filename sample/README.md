@@ -38,7 +38,26 @@ cd sample
 npm install
 ```
 
-## Deploy
+## Command reference
+
+| Script | Description |
+| --- | --- |
+| `npm run deploy:metacoin` | Deploys `ConvertLib` + `MetaCoin` and links them to MultiBaas as `convertlib` and `metacoin`. |
+| `npm run deploy:greeter` | Deploys `Greeter` ("Hello, world!") and links it to MultiBaas as `greeter`. |
+| `npm run deploy:link:greeter` | Deploys a `Greeter` and links that same address as `linked_greeter`. |
+| `npm run deploy:proxy:greeter` | Deploys `ProxiedGreeter` + `TransparentUpgradeableProxy` and links the proxy as `proxied_greeter`. |
+| `npm run deploy:metacoin:reset` | Resets Ignition state then deploys the MetaCoin module. |
+| `npm run deploy:greeter:reset` | Resets Ignition state then deploys the Greeter module. |
+| `npm run deploy:link:greeter:reset` | Resets Ignition state then deploys the linked Greeter module. |
+| `npm run deploy:proxy:greeter:reset` | Resets Ignition state then deploys the proxied Greeter module. |
+| `npm run ignition:wipe <DEPLOYMENT_ID> <FUTURE ID>` | Wipes local Ignition deployment state for `development`. |
+| `npm run ignition:deployments <DEPLOYMENT ID>` | Lists Ignition deployments recorded for `development`. |
+| `npm run ignition:status <DEPLOYMENT ID>` | Shows Ignition deployment status for `development`. |
+| `npm run deploy:all` | Cleans then deploys MetaCoin, Greeter, linked Greeter, and proxied Greeter in order. |
+| `npm run test` | Runs the Hardhat test suite for the sample. |
+
+
+### Deploy
 
 ```bash
 npm run deploy:metacoin
@@ -54,11 +73,24 @@ alias in MultiBaas:
 npm run deploy:link:greeter
 ```
 
-### Deploy the proxy example
+### Deploy the proxy
 
 ```bash
 npm run deploy:proxy:greeter
 ```
+
+
+### Wipes local Ignition deployment
+
+```sh
+npm run wipe chain-1337 GreeterModule#Greeter
+
+> hardhat-multibaas-plugin-sample-v3@1.0.0 wipe
+> HARDHAT_NETWORK=development npx hardhat ignition wipe chain-1337 GreeterModule#Greeter
+
+GreeterModule#Greeter state has been cleared
+```
+
 
 ## Notes
 
