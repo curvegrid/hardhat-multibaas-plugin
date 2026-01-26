@@ -20,11 +20,6 @@ const taskAction: TaskOverrideActionFunction = async (
   // Clear any previous link registrations before running the underlying task.
   resetRegistry();
 
-  // Inject unique deploymentId to force new deployments
-  if (!taskArgs.deploymentId) {
-    taskArgs = { ...taskArgs, deploymentId: `deploy-${Date.now()}` };
-  }
-
   const result = await runSuper(taskArgs);
 
   if (
