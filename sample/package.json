@@ -8,8 +8,8 @@
     "node": ">=24.0.0"
   },
   "scripts": {
-    "deploy:base": "HARDHAT_NETWORK=development HARDHAT_IGNITION_CONFIRM_DEPLOYMENT=false npx hardhat ignition deploy",
-    "deploy:base:reset": "HARDHAT_NETWORK=development HARDHAT_IGNITION_CONFIRM_DEPLOYMENT=false npx hardhat ignition deploy --reset",
+    "deploy:base": "HARDHAT_NETWORK=development HARDHAT_IGNITION_CONFIRM_DEPLOYMENT=false hardhat ignition deploy",
+    "deploy:base:reset": "npm run deploy:base -- --reset",
     "deploy:metacoin": "npm run deploy:base -- ignition/modules/MetaCoinModule.ts",
     "deploy:greeter": "npm run deploy:base -- ignition/modules/GreeterModule.ts",
     "deploy:link:greeter": "npm run deploy:base -- ignition/modules/LinkedGreeterModule.ts",
@@ -18,11 +18,12 @@
     "deploy:greeter:reset": "npm run deploy:base:reset -- ignition/modules/GreeterModule.ts",
     "deploy:link:greeter:reset": "npm run deploy:base:reset -- ignition/modules/LinkedGreeterModule.ts",
     "deploy:proxy:greeter:reset": "npm run deploy:base:reset -- ignition/modules/ProxiedGreeterModule.ts",
-    "wipe": "HARDHAT_NETWORK=development npx hardhat ignition wipe",
-    "ignition:deployments": "HARDHAT_NETWORK=development npx hardhat ignition deployments",
-    "ignition:status": "HARDHAT_NETWORK=development npx hardhat ignition status",
-    "deploy:all": "npx hardhat clean && npm run deploy:metacoin && npm run deploy:greeter && npm run deploy:link:greeter && npm run deploy:proxy:greeter",
-    "test": "npx hardhat test"
+    "ignition:base": "HARDHAT_NETWORK=development hardhat ignition",
+    "ignition:wipe": "npm run ignition:base -- wipe",
+    "ignition:deployments": "npm run ignition:base -- deployments",
+    "ignition:status": "npm run ignition:base -- status",
+    "deploy:all": "hardhat clean && npm run deploy:metacoin && npm run deploy:greeter && npm run deploy:link:greeter && npm run deploy:proxy:greeter",
+    "test": "hardhat test"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-ethers": "^4.0.2",
