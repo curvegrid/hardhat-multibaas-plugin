@@ -55,6 +55,34 @@ export class MultiBaasClient {
     options: MultiBaasLinkOptions = {},
     libraryAddresses: Record<string, string> = {},
   ): Promise<void> {
+    // Check if the address already exists and has a contract linked.
+    // If the contract is already linked, skip all operations to avoid
+    // re-uploading when Hardhat recompiles but doesn't redeploy.
+    const contractLabel = options.contractLabel ?? contractName.toLowerCase();
+    const existingAddress = await this._tryGetAddress(address);
+
+    if (existingAddress !== undefined && existingAddress.alias !== "") {
+      const linkedContract = existingAddress.contracts.find(
+        (c) =>
+          c.label === contractLabel &&
+          (options.contractVersion === undefined ||
+            c.version === options.contractVersion),
+      );
+
+      if (linkedContract !== undefined) {
+        console.log(
+          `MultiBaas: Contract "${linkedContract.label} ${linkedContract.version}" already created. Skipping creation.`,
+        );
+        console.log(
+          `MultiBaas: Address ${address} already created as "${existingAddress.alias}"`,
+        );
+        console.log(
+          `MultiBaas: Contract "${linkedContract.label} ${linkedContract.version}" already linked to address "${existingAddress.alias}"`,
+        );
+        return;
+      }
+    }
+
     // Create/lookup contract + address and ensure they are linked in MultiBaas.
     const contract = await this._ensureContract(
       contractName,
