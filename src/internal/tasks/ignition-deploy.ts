@@ -22,14 +22,9 @@ const taskAction: TaskOverrideActionFunction = async (
 
   const result = await runSuper(taskArgs);
 
-  if (
-    result === null ||
-    result?.type !== DeploymentResultType.SUCCESSFUL_DEPLOYMENT
-  ) {
+  if (!isSuccessfulDeployment(result)) {
     return result;
   }
-
-  const successfulResult = result as SuccessfulDeploymentResult;
 
   // If no links were registered during deployment, nothing to sync to MultiBaas.
   const links = getRegisteredLinks();
@@ -46,14 +41,39 @@ const taskAction: TaskOverrideActionFunction = async (
 
   await mbClient.setup();
 
-  // Build a lookup so library addresses can be passed to MultiBaas.
+  const libraryAddresses = buildLibraryAddressMap(result);
+  await linkRegisteredContracts(links, result, mbClient, libraryAddresses);
+
+  return result;
+};
+
+function isSuccessfulDeployment(
+  result: Awaited<ReturnType<TaskOverrideActionFunction>>,
+): result is SuccessfulDeploymentResult {
+  return (
+    result !== null &&
+    result?.type === DeploymentResultType.SUCCESSFUL_DEPLOYMENT
+  );
+}
+
+function buildLibraryAddressMap(
+  result: SuccessfulDeploymentResult,
+): Record<string, string> {
   const libraryAddresses: Record<string, string> = {};
-  for (const contract of Object.values(successfulResult.contracts)) {
+  for (const contract of Object.values(result.contracts)) {
     libraryAddresses[contract.contractName] = contract.address;
   }
+  return libraryAddresses;
+}
 
+async function linkRegisteredContracts(
+  links: ReturnType<typeof getRegisteredLinks>,
+  result: SuccessfulDeploymentResult,
+  mbClient: MultiBaasClient,
+  libraryAddresses: Record<string, string>,
+): Promise<void> {
   for (const link of links) {
-    const deployment = successfulResult.contracts[link.futureId];
+    const deployment = result.contracts[link.futureId];
     if (deployment === undefined) {
       console.warn(
         `MultiBaas: Skipping link for ${link.contractName}, no deployment found for future ${link.futureId}`,
@@ -68,8 +88,6 @@ const taskAction: TaskOverrideActionFunction = async (
       libraryAddresses,
     );
   }
-
-  return result;
-};
+}
 
 export default taskAction;
