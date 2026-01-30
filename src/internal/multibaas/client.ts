@@ -58,7 +58,7 @@ export class MultiBaasClient {
     // Check if the address already exists and has a contract linked.
     // If the contract is already linked, skip all operations to avoid
     // re-uploading when Hardhat recompiles but doesn't redeploy.
-    const contractLabel = options.contractLabel ?? contractName.toLowerCase();
+    const contractLabel = this._resolveContractLabel(contractName, options);
     const existingAddress = await this._tryGetAddress(address);
 
     if (existingAddress !== undefined && existingAddress.alias !== "") {
@@ -102,27 +102,27 @@ export class MultiBaasClient {
     options: MultiBaasLinkOptions,
     libraryAddresses: Record<string, string> = {},
   ): Promise<Contract> {
+    const contractLabel = this._resolveContractLabel(contractName, options);
+    const cached = this._getCachedContract(
+      contractLabel,
+      options.contractVersion,
+    );
+    if (cached !== undefined) {
+      return cached;
+    }
+
     // Load ABI/docs/bytecode from Hardhat outputs and reuse matching versions when possible.
     const { artifact, devdoc, userdoc, metadata } =
       await this._loadArtifactDocs(contractName);
     const bytecode = this._resolveBytecode(artifact, libraryAddresses);
     const rawAbi = JSON.stringify(artifact.abi);
 
-    const contractLabel = options.contractLabel ?? contractName.toLowerCase();
+    const requestedVersion = options.contractVersion;
 
-    const cached = this._contractCache.get(
-      `${contractLabel}@${options.contractVersion ?? "latest"}`,
-    );
-    if (cached !== undefined) {
-      return cached;
-    }
-
-    let contractVersion = options.contractVersion;
-
-    if (contractVersion !== undefined) {
+    if (requestedVersion !== undefined) {
       const existing = await this._tryGetContractVersion(
         contractLabel,
-        contractVersion,
+        requestedVersion,
       );
       if (existing !== undefined) {
         if (existing.bin !== bytecode) {
@@ -130,27 +130,35 @@ export class MultiBaasClient {
             this._allowUpdateContract,
             "contract",
             contractLabel,
-            contractVersion,
+            requestedVersion,
           );
 
           console.log(
-            `MultiBaas: Delete old contract ${contractLabel} ${contractVersion} to deploy a new one`,
+            `MultiBaas: Delete old contract ${contractLabel} ${requestedVersion} to deploy a new one`,
           );
           await this._contractsApi.deleteContractVersion(
             contractLabel,
-            contractVersion,
+            requestedVersion,
           );
         } else {
           console.log(
             `MultiBaas: Contract "${existing.contractName} ${existing.version}" already created. Skipping creation.`,
           );
-          this._contractCache.set(
-            `${contractLabel}@${contractVersion}`,
-            existing,
-          );
-          return existing;
+          return this._cacheContract(contractLabel, requestedVersion, existing);
         }
       }
+
+      return this._createContract({
+        contractLabel,
+        contractName,
+        contractVersion: requestedVersion,
+        bytecode,
+        rawAbi,
+        devdoc,
+        userdoc,
+        metadata,
+        cacheKeyVersion: requestedVersion,
+      });
     } else {
       const existing = await this._tryGetContract(contractLabel);
       if (existing !== undefined) {
@@ -158,22 +166,104 @@ export class MultiBaasClient {
           console.log(
             `MultiBaas: Contract "${existing.contractName} ${existing.version}" already created. Skipping creation.`,
           );
-          this._contractCache.set(
-            `${contractLabel}@${existing.version}`,
-            existing,
-          );
-          return existing;
+          return this._cacheContract(contractLabel, undefined, existing);
         }
 
-        contractVersion = this._incrementVersion(existing.version);
+        const contractVersion = this._incrementVersion(existing.version);
+        return this._createContract({
+          contractLabel,
+          contractName,
+          contractVersion,
+          bytecode,
+          rawAbi,
+          devdoc,
+          userdoc,
+          metadata,
+          cacheKeyVersion: undefined,
+        });
       } else {
-        contractVersion = "1.0";
+        return this._createContract({
+          contractLabel,
+          contractName,
+          contractVersion: "1.0",
+          bytecode,
+          rawAbi,
+          devdoc,
+          userdoc,
+          metadata,
+          cacheKeyVersion: undefined,
+        });
       }
     }
+  }
 
+  private _resolveContractLabel(
+    contractName: string,
+    options: MultiBaasLinkOptions,
+  ): string {
+    return options.contractLabel ?? contractName.toLowerCase();
+  }
+
+  private _getCachedContract(
+    contractLabel: string,
+    contractVersion: string | undefined,
+  ): Contract | undefined {
+    return this._contractCache.get(
+      this._contractCacheKey(contractLabel, contractVersion ?? "latest"),
+    );
+  }
+
+  private _cacheContract(
+    contractLabel: string,
+    requestedVersion: string | undefined,
+    contract: Contract,
+  ): Contract {
+    this._contractCache.set(
+      this._contractCacheKey(contractLabel, contract.version),
+      contract,
+    );
+
+    if (requestedVersion === undefined) {
+      this._contractCache.set(
+        this._contractCacheKey(contractLabel, "latest"),
+        contract,
+      );
+    }
+
+    return contract;
+  }
+
+  private _contractCacheKey(label: string, version: string): string {
+    return `${label}@${version}`;
+  }
+
+  private async _createContract({
+    contractLabel,
+    contractName,
+    contractVersion,
+    bytecode,
+    rawAbi,
+    devdoc,
+    userdoc,
+    metadata,
+    cacheKeyVersion,
+  }: {
+    contractLabel: string;
+    contractName: string;
+    contractVersion: string;
+    bytecode: string;
+    rawAbi: string;
+    devdoc?: unknown;
+    userdoc?: unknown;
+    metadata?: string;
+    cacheKeyVersion: string | undefined;
+  }): Promise<Contract> {
     console.log(
       `MultiBaas: Creating contract "${contractLabel} ${contractVersion}"`,
     );
+
+    const developerDoc = JSON.stringify(devdoc) ?? "{}";
+    const userDoc = JSON.stringify(userdoc) ?? "{}";
 
     const payload: BaseContract = {
       label: contractLabel,
@@ -181,8 +271,8 @@ export class MultiBaasClient {
       version: contractVersion,
       bin: bytecode,
       rawAbi,
-      developerDoc: JSON.stringify(devdoc) || "{}",
-      userDoc: JSON.stringify(userdoc) || "{}",
+      developerDoc,
+      userDoc,
       metadata,
     };
 
@@ -191,8 +281,7 @@ export class MultiBaasClient {
       payload,
     );
     const created = response.data.result;
-    this._contractCache.set(`${contractLabel}@${contractVersion}`, created);
-    return created;
+    return this._cacheContract(contractLabel, cacheKeyVersion, created);
   }
 
   private _resolveBytecode(
