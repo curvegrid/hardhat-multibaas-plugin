@@ -19,22 +19,8 @@ export async function validateUserConfig(
   userConfig: HardhatUserConfig,
 ): Promise<HardhatUserConfigValidationError[]> {
   const errors: HardhatUserConfigValidationError[] = [];
-  const mbConfig = userConfig.mbConfig;
-
+  const mbConfig = getMbConfig(userConfig, errors);
   if (mbConfig === undefined) {
-    errors.push({
-      path: ["mbConfig"],
-      message:
-        "MultiBaas config is required. Add mbConfig to your Hardhat config.",
-    });
-    return errors;
-  }
-
-  if (typeof mbConfig !== "object" || mbConfig === null) {
-    errors.push({
-      path: ["mbConfig"],
-      message: "mbConfig must be an object.",
-    });
     return errors;
   }
 
@@ -68,12 +54,50 @@ export async function resolveUserConfig(
 
   return {
     ...resolvedConfig,
-    mbConfig: {
-      host: await resolveConfigurationVariable(mbConfig.host).getUrl(),
-      apiKey: await resolveConfigurationVariable(mbConfig.apiKey).get(),
-      allowUpdateAddress: mbConfig.allowUpdateAddress ?? [],
-      allowUpdateContract: mbConfig.allowUpdateContract ?? [],
-    },
+    mbConfig: await resolveMbConfig(mbConfig, resolveConfigurationVariable),
+  };
+}
+
+function getMbConfig(
+  userConfig: HardhatUserConfig,
+  errors: HardhatUserConfigValidationError[],
+): MBConfigUserConfig | undefined {
+  const mbConfig = userConfig.mbConfig;
+
+  if (mbConfig === undefined) {
+    errors.push({
+      path: ["mbConfig"],
+      message:
+        "MultiBaas config is required. Add mbConfig to your Hardhat config.",
+    });
+    return undefined;
+  }
+
+  if (typeof mbConfig !== "object" || mbConfig === null) {
+    errors.push({
+      path: ["mbConfig"],
+      message: "mbConfig must be an object.",
+    });
+    return undefined;
+  }
+
+  return mbConfig;
+}
+
+async function resolveMbConfig(
+  mbConfig: MBConfigUserConfig,
+  resolveConfigurationVariable: ConfigurationVariableResolver,
+): Promise<{
+  host: string;
+  apiKey: string;
+  allowUpdateAddress: string[];
+  allowUpdateContract: string[];
+}> {
+  return {
+    host: await resolveConfigurationVariable(mbConfig.host).getUrl(),
+    apiKey: await resolveConfigurationVariable(mbConfig.apiKey).get(),
+    allowUpdateAddress: normalizeAllowList(mbConfig.allowUpdateAddress),
+    allowUpdateContract: normalizeAllowList(mbConfig.allowUpdateContract),
   };
 }
 
@@ -106,4 +130,8 @@ function validateStringArray(
       message: `mbConfig.${key} must be an array of strings.`,
     });
   }
+}
+
+function normalizeAllowList(value: string[] | undefined): string[] {
+  return Array.isArray(value) ? value : [];
 }
