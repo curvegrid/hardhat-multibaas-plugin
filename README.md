@@ -84,6 +84,8 @@ npx hardhat ignition deploy ignition/modules/GreeterModule.ts
 npm test
 ```
 
+Note: the Ignition deploy override tests use a minimal fixture module under `test/fixtures/ignition` to avoid resolving the sample project dependencies during CI.
+
 ## MultiBaas link options
 
 ```ts

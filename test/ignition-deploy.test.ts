@@ -48,7 +48,7 @@ function createHre() {
     },
     config: {
       paths: {
-        ignition: "sample/ignition",
+        ignition: "test/fixtures/ignition",
         cache: "cache",
       },
       ignition: {},
@@ -82,7 +82,7 @@ function createHre() {
 
 function baseArgs(overrides = {}) {
   return {
-    modulePath: "sample/ignition/modules/GreeterModule.ts",
+    modulePath: "test/fixtures/ignition/modules/EmptyModule.ts",
     strategy: "basic",
     reset: false,
     verify: false,
