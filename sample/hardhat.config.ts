@@ -1,5 +1,6 @@
 import hardhatEthersPlugin from "@nomicfoundation/hardhat-ethers";
 import hardhatMochaPlugin from "@nomicfoundation/hardhat-mocha";
+import "@nomicfoundation/hardhat-ignition";
 import { defineConfig } from "hardhat/config";
 import hardhatMultiBaasPlugin from "hardhat-multibaas-plugin";
 import path from "node:path";
