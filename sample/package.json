@@ -14,15 +14,17 @@
     "deploy:greeter": "npm run deploy:base -- ignition/modules/GreeterModule.ts",
     "deploy:link:greeter": "npm run deploy:base -- ignition/modules/LinkedGreeterModule.ts",
     "deploy:proxy:greeter": "npm run deploy:base -- ignition/modules/ProxiedGreeterModule.ts",
+    "deploy:series": "npm run deploy:base -- ignition/modules/SeriesModule.ts",
     "deploy:metacoin:reset": "npm run deploy:base:reset -- ignition/modules/MetaCoinModule.ts",
     "deploy:greeter:reset": "npm run deploy:base:reset -- ignition/modules/GreeterModule.ts",
     "deploy:link:greeter:reset": "npm run deploy:base:reset -- ignition/modules/LinkedGreeterModule.ts",
     "deploy:proxy:greeter:reset": "npm run deploy:base:reset -- ignition/modules/ProxiedGreeterModule.ts",
+    "deploy:series:reset": "npm run deploy:base:reset -- ignition/modules/SeriesModule.ts",
     "ignition:base": "HARDHAT_NETWORK=development hardhat ignition",
     "ignition:wipe": "npm run ignition:base -- wipe",
     "ignition:deployments": "npm run ignition:base -- deployments",
     "ignition:status": "npm run ignition:base -- status",
-    "deploy:all": "hardhat clean && npm run deploy:metacoin && npm run deploy:greeter && npm run deploy:link:greeter && npm run deploy:proxy:greeter",
+    "deploy:all": "hardhat clean && npm run deploy:metacoin && npm run deploy:greeter && npm run deploy:link:greeter && npm run deploy:proxy:greeter && npm run deploy:series",
     "test": "hardhat test"
   },
   "devDependencies": {

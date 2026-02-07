@@ -50,14 +50,16 @@ Note:
 | `npm run deploy:greeter` | Deploys `Greeter` ("Hello, world!") and links it to MultiBaas as `greeter`. |
 | `npm run deploy:link:greeter` | Deploys a `Greeter` and links that same address as `linked_greeter`. |
 | `npm run deploy:proxy:greeter` | Deploys `ProxiedGreeter` + `TransparentUpgradeableProxy` and links the proxy as `proxied_greeter`. |
+| `npm run deploy:series` | Deploys the Series contracts (registry, token, vault, factory) and links each to MultiBaas. |
 | `npm run deploy:metacoin:reset` | Resets Ignition state then deploys the MetaCoin module. |
 | `npm run deploy:greeter:reset` | Resets Ignition state then deploys the Greeter module. |
 | `npm run deploy:link:greeter:reset` | Resets Ignition state then deploys the linked Greeter module. |
 | `npm run deploy:proxy:greeter:reset` | Resets Ignition state then deploys the proxied Greeter module. |
+| `npm run deploy:series:reset` | Resets Ignition state then deploys the Series module. |
 | `npm run ignition:wipe <DEPLOYMENT_ID> <FUTURE_ID>` | Wipes local Ignition deployment state for `development`. |
 | `npm run ignition:deployments <DEPLOYMENT_ID>` | Lists Ignition deployments recorded for `development`. |
 | `npm run ignition:status <DEPLOYMENT_ID>` | Shows Ignition deployment status for `development`. |
-| `npm run deploy:all` | Cleans then deploys MetaCoin, Greeter, linked Greeter, and proxied Greeter in order. |
+| `npm run deploy:all` | Cleans then deploys MetaCoin, Greeter, linked Greeter, proxied Greeter, and Series in order. |
 | `npm run test` | Runs the Hardhat test suite for the sample. |
 
 [`:reset`](https://hardhat.org/ignition/docs/guides/modifications#clearing-an-existing-deployment-with-reset) clears a failed or incompatible Hardhat Ignition deployment's state in the local journal, allowing you to restart it from scratch, while [`:wipe`](https://hardhat.org/ignition/docs/reference/cli-commands#wipe) specifically targets individual failed futures or entire deployments (using deploymentId and futureId) to force a re-run when modifications break compatibility or errors occur, effectively making the deployment directory ready for a fresh attempt on your local network.
@@ -84,6 +86,16 @@ npm run deploy:link:greeter
 npm run deploy:proxy:greeter
 ```
 
+### Deploy the Series module
+
+The Series module deploys four contracts in order and wires them by constructor
+inputs: `SeriesRegistry`, `SeriesToken`, `SeriesVault`, and `SeriesFactory`.
+This is useful for testing Ignition wipes and re-runs on only part of a
+multi-contract graph.
+
+```bash
+npm run deploy:series
+```
 
 ### Wipes local Ignition deployment
 
