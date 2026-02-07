@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { describe, it } from "node:test";
+import { afterEach, beforeEach, describe, it } from "node:test";
 
 import { DeploymentResultType } from "@nomicfoundation/ignition-core";
 import taskAction from "../dist/internal/tasks/ignition-deploy.js";
@@ -9,34 +9,135 @@ import {
   resetRegistry,
 } from "../dist/internal/registry.js";
 
+const ORIGINAL_CONFIRM = process.env.HARDHAT_IGNITION_CONFIRM_DEPLOYMENT;
+
+beforeEach(() => {
+  process.env.HARDHAT_IGNITION_CONFIRM_DEPLOYMENT = "true";
+});
+
+afterEach(() => {
+  if (ORIGINAL_CONFIRM === undefined) {
+    delete process.env.HARDHAT_IGNITION_CONFIRM_DEPLOYMENT;
+  } else {
+    process.env.HARDHAT_IGNITION_CONFIRM_DEPLOYMENT = ORIGINAL_CONFIRM;
+  }
+  delete globalThis.__MB_PLUGIN_DEPLOY__;
+});
+
+function createHre() {
+  return {
+    network: {
+      connect: async () => ({
+        networkName: "development",
+        networkConfig: { type: "http" },
+        provider: {
+          request: async ({ method }) => {
+            if (method === "eth_chainId") {
+              return "0x1";
+            }
+            if (method === "eth_accounts") {
+              return [];
+            }
+            if (method === "hardhat_metadata") {
+              return { instanceId: "test" };
+            }
+            return null;
+          },
+        },
+      }),
+    },
+    config: {
+      paths: {
+        ignition: "sample/ignition",
+        cache: "cache",
+      },
+      ignition: {},
+      networks: {
+        development: {
+          ignition: {},
+        },
+      },
+      mbConfig: {
+        host: "http://example.com",
+        apiKey: "key",
+        allowUpdateAddress: [],
+        allowUpdateContract: [],
+        syncExisting: false,
+        requireChainIdMatch: true,
+      },
+    },
+    tasks: {
+      getTask: () => ({
+        run: async () => {},
+      }),
+    },
+    artifacts: {
+      getBuildInfoId: async () => undefined,
+      getBuildInfoPath: async () => undefined,
+      readArtifact: async () => ({}),
+    },
+    interruptions: undefined,
+  };
+}
+
+function baseArgs(overrides = {}) {
+  return {
+    modulePath: "sample/ignition/modules/GreeterModule.ts",
+    strategy: "basic",
+    reset: false,
+    verify: false,
+    writeLocalhostDeployment: false,
+    ...overrides,
+  };
+}
+
 describe("ignition deploy override", () => {
   it("injects a deploymentId when missing", async () => {
     resetRegistry();
     let capturedArgs;
-
-    const runSuper = async (args) => {
-      capturedArgs = args;
-      return null;
+    const successResult = {
+      type: DeploymentResultType.SUCCESSFUL_DEPLOYMENT,
+      contracts: {},
     };
 
-    const result = await taskAction({}, {}, runSuper);
+    globalThis.__MB_PLUGIN_DEPLOY__ = async (args) => {
+      capturedArgs = args;
+      return successResult;
+    };
 
-    assert.equal(result, null);
-    assert.ok(/^deploy-\d+$/.test(capturedArgs.deploymentId));
+    const result = await taskAction(baseArgs(), createHre(), async () => null);
+
+    assert.strictEqual(result, successResult);
+    assert.ok(
+      /deployments[\\/]+chain-1$/.test(capturedArgs.deploymentDir),
+      `Unexpected deploymentDir: ${capturedArgs.deploymentDir}`,
+    );
   });
 
   it("preserves an existing deploymentId", async () => {
     resetRegistry();
     let capturedArgs;
-
-    const runSuper = async (args) => {
-      capturedArgs = args;
-      return null;
+    const successResult = {
+      type: DeploymentResultType.SUCCESSFUL_DEPLOYMENT,
+      contracts: {},
     };
 
-    await taskAction({ deploymentId: "fixed-id" }, {}, runSuper);
+    globalThis.__MB_PLUGIN_DEPLOY__ = async (args) => {
+      capturedArgs = args;
+      return successResult;
+    };
 
-    assert.equal(capturedArgs.deploymentId, "fixed-id");
+    const result = await taskAction(
+      baseArgs({ deploymentId: "fixed-id" }),
+      createHre(),
+      async () => null,
+    );
+
+    assert.strictEqual(result, successResult);
+    assert.ok(
+      /deployments[\\/]+fixed-id$/.test(capturedArgs.deploymentDir),
+      `Unexpected deploymentDir: ${capturedArgs.deploymentDir}`,
+    );
   });
 
   it("clears any previously registered links", async () => {
@@ -44,7 +145,11 @@ describe("ignition deploy override", () => {
     registerLink({ id: "future-1", contractName: "Greeter" });
     assert.equal(getRegisteredLinks().length, 1);
 
-    await taskAction({}, {}, async () => null);
+    globalThis.__MB_PLUGIN_DEPLOY__ = async () => ({
+      type: DeploymentResultType.SUCCESSFUL_DEPLOYMENT,
+      contracts: {},
+    });
+    await taskAction(baseArgs(), createHre(), async () => null);
 
     assert.equal(getRegisteredLinks().length, 0);
   });
@@ -56,10 +161,11 @@ describe("ignition deploy override", () => {
       contracts: {},
     };
 
+    globalThis.__MB_PLUGIN_DEPLOY__ = async () => successResult;
     const result = await taskAction(
-      { deploymentId: "fixed-id" },
-      {},
-      async () => successResult,
+      baseArgs({ deploymentId: "fixed-id" }),
+      createHre(),
+      async () => null,
     );
 
     assert.strictEqual(result, successResult);

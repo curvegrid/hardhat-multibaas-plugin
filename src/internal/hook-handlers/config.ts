@@ -28,6 +28,8 @@ export async function validateUserConfig(
   validateSensitiveString(mbConfig, "apiKey", errors);
   validateStringArray(mbConfig, "allowUpdateAddress", errors);
   validateStringArray(mbConfig, "allowUpdateContract", errors);
+  validateBoolean(mbConfig, "syncExisting", errors);
+  validateBoolean(mbConfig, "requireChainIdMatch", errors);
 
   return errors;
 }
@@ -92,12 +94,16 @@ async function resolveMbConfig(
   apiKey: string;
   allowUpdateAddress: string[];
   allowUpdateContract: string[];
+  syncExisting: boolean;
+  requireChainIdMatch: boolean;
 }> {
   return {
     host: await resolveConfigurationVariable(mbConfig.host).getUrl(),
     apiKey: await resolveConfigurationVariable(mbConfig.apiKey).get(),
     allowUpdateAddress: normalizeAllowList(mbConfig.allowUpdateAddress),
     allowUpdateContract: normalizeAllowList(mbConfig.allowUpdateContract),
+    syncExisting: mbConfig.syncExisting ?? false,
+    requireChainIdMatch: mbConfig.requireChainIdMatch ?? true,
   };
 }
 
@@ -128,6 +134,24 @@ function validateStringArray(
     errors.push({
       path: ["mbConfig", key],
       message: `mbConfig.${key} must be an array of strings.`,
+    });
+  }
+}
+
+function validateBoolean(
+  mbConfig: MBConfigUserConfig,
+  key: "syncExisting" | "requireChainIdMatch",
+  errors: HardhatUserConfigValidationError[],
+): void {
+  const value = mbConfig[key];
+  if (value === undefined) {
+    return;
+  }
+
+  if (typeof value !== "boolean") {
+    errors.push({
+      path: ["mbConfig", key],
+      message: `mbConfig.${key} must be a boolean.`,
     });
   }
 }

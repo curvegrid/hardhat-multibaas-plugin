@@ -52,5 +52,7 @@ export default defineConfig({
     apiKey: deploymentConfig.adminApiKey,
     allowUpdateAddress: ["development"],
     allowUpdateContract: ["development"],
+    syncExisting: false,
+    requireChainIdMatch: true,
   },
 });

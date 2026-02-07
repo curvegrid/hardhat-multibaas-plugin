@@ -140,6 +140,8 @@ describe("mbConfig resolution", () => {
       apiKey: "resolved:key",
       allowUpdateAddress: [],
       allowUpdateContract: [],
+      syncExisting: false,
+      requireChainIdMatch: true,
     });
   });
 

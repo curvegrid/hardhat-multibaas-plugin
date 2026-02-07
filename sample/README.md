@@ -1,6 +1,7 @@
 # hardhat-multibaas-plugin sample (Hardhat v3)
 
 This sample project deploys and links MetaCoin, Greeter, a linked Greeter instance, and an upgradeable ProxiedGreeter using Ignition modules.
+It is wired to the local plugin source during development.
 
 ## Requirements
 
@@ -12,7 +13,7 @@ This sample project deploys and links MetaCoin, Greeter, a linked Greeter instan
 
 This sample reads deployment settings from:
 
-`deployment-config.<network>.js`
+`deployment-config.<network>.ts`
 
 The network name comes from `HARDHAT_NETWORK` (defaults to `HARDHAT_NETWORK=development`). The file must include:
 
@@ -37,6 +38,9 @@ Then install the sample dependencies:
 cd sample
 npm install
 ```
+
+Note:
+- `sample/package.json` depends on `hardhat-multibaas-plugin` via a local path (`".."`). If you want this sample to run outside this repo, change that dependency to a published version or a different local path.
 
 ## Command reference
 

@@ -5,6 +5,8 @@ export interface MBConfigUserConfig {
   apiKey: SensitiveString;
   allowUpdateAddress?: string[];
   allowUpdateContract?: string[];
+  syncExisting?: boolean;
+  requireChainIdMatch?: boolean;
 }
 
 export interface MBConfig {
@@ -12,6 +14,8 @@ export interface MBConfig {
   apiKey: string;
   allowUpdateAddress: string[];
   allowUpdateContract: string[];
+  syncExisting: boolean;
+  requireChainIdMatch: boolean;
 }
 
 export interface MultiBaasLinkOptions {

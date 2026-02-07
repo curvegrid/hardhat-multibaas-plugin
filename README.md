@@ -1,6 +1,6 @@
 # hardhat-multibaas-plugin (Hardhat v3)
 
-Integrate MultiBaas into Hardhat v3 deployments using Ignition modules. This plugin uploads artifacts, creates or updates MultiBaas contracts, and links deployed addresses after Ignition completes.
+Integrate MultiBaas into Hardhat v3 deployments using Ignition modules. The plugin mirrors Ignition's deploy flow, uploads artifacts, creates or updates MultiBaas contracts, and links deployed addresses for any futures registered via `mb.link`.
 
 ## Install
 
@@ -33,14 +33,26 @@ export default defineConfig({
     host: configVariable("MB_PLUGIN_HOST"),
     apiKey: configVariable("MB_PLUGIN_API_KEY"),
     allowUpdateAddress: ["development"],
-    allowUpdateContract: ["development"]
+    allowUpdateContract: ["development"],
+    syncExisting: false,
+    requireChainIdMatch: true
   }
 });
 ```
 
+Optional `mbConfig` fields:
+- `syncExisting`: When `true`, syncs all registered futures found in Ignition’s deployment result, even if they weren’t executed in the current run.
+- `requireChainIdMatch`: When `true` (default), compare MultiBaas chain ID with the Hardhat network chain ID and fail fast on mismatches.
+
+Behavior notes:
+- The plugin overrides `hardhat ignition deploy` and keeps Ignition’s prompts, reset behavior, and UI.
+- Only futures registered via `mb.link` are synced to MultiBaas.
+- By default, the plugin syncs only futures that Ignition executed in the current run.
+- When `syncExisting` is enabled, the plugin will sync all registered futures present in the deployment result, including previously deployed contracts.
+
 ## Use with Ignition
 
-Register any deployment (or `contractAt`) you want linked in MultiBaas by calling `mb.link` inside your module. The plugin overrides `ignition deploy` and performs MultiBaas linking only for registered futures.
+Register any deployment (or `contractAt`) you want linked in MultiBaas by calling `mb.link` inside your module. The plugin performs MultiBaas linking only for registered futures.
 
 ```ts
 import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
@@ -64,6 +76,12 @@ Then deploy the module:
 
 ```bash
 npx hardhat ignition deploy ignition/modules/GreeterModule.ts
+```
+
+## Tests
+
+```bash
+npm test
 ```
 
 ## MultiBaas link options

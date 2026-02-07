@@ -44,9 +44,22 @@ export class MultiBaasClient {
     this._allowUpdateContract = new Set(this._config.allowUpdateContract);
   }
 
-  async setup(): Promise<void> {
+  async setup(expectedChainId?: number): Promise<void> {
     // Verify connectivity and credentials up front.
-    await this._chainsApi.getChainStatus();
+    const response = await this._chainsApi.getChainStatus();
+    const chainId = response.data.result.chainID;
+
+    if (
+      this._config.requireChainIdMatch &&
+      expectedChainId !== undefined &&
+      chainId !== undefined &&
+      chainId !== expectedChainId
+    ) {
+      // Fail fast if we're pointing at the wrong MultiBaas chain.
+      throw new Error(
+        `MultiBaas: Chain ID mismatch (Hardhat ${expectedChainId}, MultiBaas ${chainId}).`,
+      );
+    }
   }
 
   async linkDeployedContract(
