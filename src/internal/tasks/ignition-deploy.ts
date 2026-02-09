@@ -72,7 +72,14 @@ const taskAction: TaskOverrideActionFunction = async (
     return result;
   }
 
-  const shouldSyncExisting = hre.config.mbConfig.syncExisting;
+  const mbConfig = hre.config.mbConfig;
+  if (mbConfig === undefined) {
+    throw new Error(
+      "MultiBaas: mbConfig is required in your Hardhat config to sync contracts.",
+    );
+  }
+
+  const shouldSyncExisting = mbConfig.syncExisting;
 
   // Only sync what Ignition executed in this run unless explicitly configured.
   if (executedFutureIds.size === 0 && !shouldSyncExisting) {
@@ -81,7 +88,7 @@ const taskAction: TaskOverrideActionFunction = async (
 
   const connection = await hre.network.connect();
   const mbClient = new MultiBaasClient(
-    hre.config.mbConfig,
+    mbConfig,
     connection.networkName,
     hre.artifacts,
   );

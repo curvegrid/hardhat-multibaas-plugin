@@ -8,6 +8,6 @@ declare module "hardhat/types/config" {
   }
 
   export interface HardhatConfig {
-    mbConfig: MBConfig;
+    mbConfig?: MBConfig;
   }
 }
