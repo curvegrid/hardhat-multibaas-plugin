@@ -275,8 +275,8 @@ export class MultiBaasClient {
       `MultiBaas: Creating contract "${contractLabel} ${contractVersion}"`,
     );
 
-    const developerDoc = JSON.stringify(devdoc) ?? "{}";
-    const userDoc = JSON.stringify(userdoc) ?? "{}";
+    const developerDoc = JSON.stringify(devdoc ?? {});
+    const userDoc = JSON.stringify(userdoc ?? {});
 
     const payload: BaseContract = {
       label: contractLabel,
