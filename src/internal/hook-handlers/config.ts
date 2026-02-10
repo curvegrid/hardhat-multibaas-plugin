@@ -112,10 +112,16 @@ function validateSensitiveString(
   key: "host" | "apiKey",
   errors: HardhatUserConfigValidationError[],
 ): void {
-  if (mbConfig[key] === undefined) {
+  const value = mbConfig[key];
+  if (value === undefined) {
     errors.push({
       path: ["mbConfig", key],
       message: `mbConfig.${key} is required.`,
+    });
+  } else if (typeof value !== "string" && typeof value !== "object") {
+    errors.push({
+      path: ["mbConfig", key],
+      message: `mbConfig.${key} must be a string or configuration variable.`,
     });
   }
 }
