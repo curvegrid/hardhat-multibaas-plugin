@@ -1,11 +1,18 @@
-const typescriptEslint = require("@typescript-eslint/eslint-plugin");
-const typescriptEslintParser = require("@typescript-eslint/parser");
-const importPlugin = require("eslint-plugin-import");
-const eslintComments = require("eslint-plugin-eslint-comments");
-const prettier = require("eslint-plugin-prettier");
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
-module.exports = [
+import typescriptEslint from "@typescript-eslint/eslint-plugin";
+import typescriptEslintParser from "@typescript-eslint/parser";
+import importPlugin from "eslint-plugin-import";
+import eslintComments from "eslint-plugin-eslint-comments";
+import prettier from "eslint-plugin-prettier";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+export default [
   {
+    files: ["src/**/*.ts"],
     languageOptions: {
       parser: typescriptEslintParser,
       parserOptions: {
@@ -25,7 +32,19 @@ module.exports = [
       ...importPlugin.configs.recommended.rules,
       ...eslintComments.configs.recommended.rules,
       ...prettier.configs.recommended.rules,
+      "@typescript-eslint/no-unsafe-assignment": "off",
+      "@typescript-eslint/no-unsafe-member-access": "off",
+      "@typescript-eslint/no-unsafe-return": "off",
+      "@typescript-eslint/require-await": "off",
+      "import/no-unresolved": "off",
     },
-    ignores: ["eslint.config.js", "node_modules/*", "sample/*", "lib/*"],
+    ignores: [
+      "eslint.config.js",
+      "node_modules/**",
+      "dist/**",
+      "sample/**",
+      "lib/**",
+      "test/**",
+    ],
   },
 ];

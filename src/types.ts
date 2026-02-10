@@ -1,21 +1,32 @@
-import { CompilerOutputContract } from "hardhat/types";
+import type { SensitiveString } from "hardhat/types/config";
 
-export interface CompilerSettings {
-  outputSelection?: OutputSelection;
+export interface MBConfigUserConfig {
+  host: SensitiveString;
+  apiKey: SensitiveString;
+  allowUpdateAddress?: string[];
+  allowUpdateContract?: string[];
+  syncExisting?: boolean;
+  requireChainIdMatch?: boolean;
 }
 
-export interface OutputSelection {
-  "*": {
-    "*": string[];
-    "": string[];
-  };
+export interface MBConfig {
+  host: string;
+  apiKey: string;
+  allowUpdateAddress: string[];
+  allowUpdateContract: string[];
+  syncExisting: boolean;
+  requireChainIdMatch: boolean;
 }
 
-export interface ExtendedCompilerOutputContract extends CompilerOutputContract {
-  devdoc?: unknown;
-  userdoc?: unknown;
+export interface MultiBaasLinkOptions {
+  contractLabel?: string;
+  contractVersion?: string;
+  addressAlias?: string;
+  startingBlock?: string;
 }
 
-export interface ArtifactDBG {
-  buildInfo: string;
+export interface RegisteredLink {
+  futureId: string;
+  contractName: string;
+  options: MultiBaasLinkOptions;
 }

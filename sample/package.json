@@ -1,25 +1,43 @@
 {
-  "name": "sample",
-  "description": "sample package for testing hardhat-multibaas-plugin",
+  "name": "hardhat-multibaas-plugin-sample-v3",
+  "private": true,
   "version": "1.0.0",
-  "author": "Curvegrid",
-  "license": "MIT",
+  "description": "Sample Hardhat v3 project for hardhat-multibaas-plugin",
+  "type": "module",
   "engines": {
     "node": ">=24.0.0"
   },
   "scripts": {
-    "test": "npx hardhat test",
-    "deploy:metacoin": "HARDHAT_NETWORK=development npx hardhat run scripts/deploy-metacoin.ts",
-    "deploy:greeter": "HARDHAT_NETWORK=development npx hardhat run scripts/deploy-greeter.ts",
-    "deploy:link:greeter": "HARDHAT_NETWORK=development npx hardhat run scripts/deploy-then-link-greeter.ts",
-    "deploy:proxy:greeter": "HARDHAT_NETWORK=development npx hardhat run scripts/deploy-proxied-greeter.ts",
-    "deploy:all": "npx hardhat clean && npm run deploy:metacoin && npm run deploy:greeter && npm run deploy:link:greeter && npm run deploy:proxy:greeter"
+    "deploy:base": "HARDHAT_NETWORK=development HARDHAT_IGNITION_CONFIRM_DEPLOYMENT=false hardhat ignition deploy",
+    "deploy:base:reset": "npm run deploy:base -- --reset",
+    "deploy:metacoin": "npm run deploy:base -- ignition/modules/MetaCoinModule.ts",
+    "deploy:greeter": "npm run deploy:base -- ignition/modules/GreeterModule.ts",
+    "deploy:link:greeter": "npm run deploy:base -- ignition/modules/LinkedGreeterModule.ts",
+    "deploy:proxy:greeter": "npm run deploy:base -- ignition/modules/ProxiedGreeterModule.ts",
+    "deploy:series": "npm run deploy:base -- ignition/modules/SeriesModule.ts",
+    "deploy:metacoin:reset": "npm run deploy:base:reset -- ignition/modules/MetaCoinModule.ts",
+    "deploy:greeter:reset": "npm run deploy:base:reset -- ignition/modules/GreeterModule.ts",
+    "deploy:link:greeter:reset": "npm run deploy:base:reset -- ignition/modules/LinkedGreeterModule.ts",
+    "deploy:proxy:greeter:reset": "npm run deploy:base:reset -- ignition/modules/ProxiedGreeterModule.ts",
+    "deploy:series:reset": "npm run deploy:base:reset -- ignition/modules/SeriesModule.ts",
+    "ignition:base": "HARDHAT_NETWORK=development hardhat ignition",
+    "ignition:wipe": "npm run ignition:base -- wipe",
+    "ignition:deployments": "npm run ignition:base -- deployments",
+    "ignition:status": "npm run ignition:base -- status",
+    "deploy:all": "hardhat clean && npm run deploy:metacoin && npm run deploy:greeter && npm run deploy:link:greeter && npm run deploy:proxy:greeter && npm run deploy:series",
+    "test": "hardhat test"
   },
   "devDependencies": {
-    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "@nomicfoundation/hardhat-ethers": "^4.0.2",
+    "@nomicfoundation/hardhat-ignition": "^3.0.0",
+    "@nomicfoundation/hardhat-mocha": "^3.0.9",
+    "@openzeppelin/contracts": "^5.0.1",
     "@openzeppelin/contracts-upgradeable": "^5.1.0",
-    "@openzeppelin/hardhat-upgrades": "^3.0.4",
-    "hardhat": "^2.20.1",
-    "hardhat-multibaas-plugin": "./.."
+    "@types/node": "^24.0.0",
+    "chai": "^5.1.2",
+    "hardhat": "^3.0.0",
+    "hardhat-multibaas-plugin": "..",
+    "mocha": "^11.0.0",
+    "typescript": "^5.6.3"
   }
 }

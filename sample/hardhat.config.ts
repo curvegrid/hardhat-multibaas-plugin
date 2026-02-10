@@ -1,76 +1,59 @@
-import { HardhatUserConfig } from "hardhat/config";
-import "@nomicfoundation/hardhat-toolbox";
-import "hardhat-multibaas-plugin";
-import "@openzeppelin/hardhat-upgrades";
-import path from "path";
+import hardhatEthersPlugin from "@nomicfoundation/hardhat-ethers";
+import hardhatMochaPlugin from "@nomicfoundation/hardhat-mocha";
+import "@nomicfoundation/hardhat-ignition";
+import { defineConfig } from "hardhat/config";
+import hardhatMultiBaasPlugin from "hardhat-multibaas-plugin";
+import path from "node:path";
+import { fileURLToPath, pathToFileURL } from "node:url";
 
-let deployerPrivateKey =
-  "0x0000000000000000000000000000000000000000000000000000000000000000";
-let deploymentEndpoint, ethChainID, web3Key, adminApiKey;
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-if (process.env.HARDHAT_NETWORK) {
-  const CONFIG_FILE = path.join(
-    __dirname,
-    `./deployment-config.${process.env.HARDHAT_NETWORK}`
-  );
-  ({
-    deploymentConfig: {
-      deploymentEndpoint,
-      ethChainID,
-      deployerPrivateKey,
-      web3Key,
-      adminApiKey,
-    },
-  } = require(CONFIG_FILE));
-}
+const networkName = process.env.HARDHAT_NETWORK ?? "development";
+const configPath = path.resolve(
+  __dirname,
+  `./deployment-config.${networkName}.ts`,
+);
 
-const config: HardhatUserConfig = {
+const { deploymentConfig } = (await import(pathToFileURL(configPath).href)) as {
+  deploymentConfig: {
+    deploymentEndpoint: string;
+    ethChainID: number;
+    web3Key: string;
+    adminApiKey: string;
+    deployerPrivateKey: string;
+  };
+};
+
+export default defineConfig({
+  plugins: [hardhatEthersPlugin, hardhatMochaPlugin, hardhatMultiBaasPlugin],
+  solidity: {
+    version: "0.8.28",
+    npmFilesToBuild: [
+      "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol",
+      "@openzeppelin/contracts/proxy/transparent/ProxyAdmin.sol",
+    ],
+  },
+  ignition: {
+    // CAUTION: suitable for development environments only with on-demand block production
+    // https://hardhat.org/ignition/docs/reference/config#requiredconfirmations
+    requiredConfirmations: 1,
+  },
   networks: {
     development: {
-      url: `${deploymentEndpoint}/web3/${web3Key}`,
-      chainId: ethChainID,
-      accounts: [deployerPrivateKey],
+      type: "http",
+      chainType: "l1",
+      url: `${deploymentConfig.deploymentEndpoint}/web3/${deploymentConfig.web3Key}`,
+      chainId: deploymentConfig.ethChainID,
+      accounts: [deploymentConfig.deployerPrivateKey],
     },
   },
   mbConfig: {
-    apiKey: adminApiKey,
-    host: deploymentEndpoint,
+    host: deploymentConfig.deploymentEndpoint,
+    apiKey: deploymentConfig.adminApiKey,
     allowUpdateAddress: ["development"],
     allowUpdateContract: ["development"],
+    syncExisting: false,
+    requireChainIdMatch: true,
   },
-  paths: {
-    sources: "./contracts",
-    tests: "./test",
-    cache: "./cache",
-    artifacts: "./artifacts",
-  },
-  mocha: {
-    timeout: 20000,
-  },
-  solidity: {
-    compilers: [
-      {
-        version: "0.8.24",
-        settings: {
-          optimizer: {
-            enabled: true,
-            runs: 200,
-          },
-        },
-      },
-    ],
-    overrides: {
-      "contracts/MetaCoin.sol": {
-        version: "0.8.23",
-        settings: {
-          optimizer: {
-            enabled: true,
-            runs: 100,
-          },
-        },
-      },
-    },
-  },
-};
-
-export = config;
+});

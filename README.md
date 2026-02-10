@@ -1,198 +1,125 @@
-# hardhat-multibaas-plugin
+# hardhat-multibaas-plugin (Hardhat v3)
 
-Integrate [MultiBaas](https://docs.curvegrid.com/multibaas/) into your [Hardhat](https://hardhat.org/getting-started/) workflow!
+Integrate MultiBaas into Hardhat v3 deployments using Ignition modules. The plugin mirrors Ignition's deploy flow, uploads artifacts, creates or updates MultiBaas contracts, and links deployed addresses for any futures registered via `mb.link`.
 
-This plugin streamlines your development by automatically adding smart contracts deployed through Hardhat to MultiBaas, reducing manual effort. From there, you can manage your smart contracts via the MultiBaas web UI and build blockchain applications using its REST API and SDKs.
-
-For more details about MultiBaas, check out our [introductory walkthrough](https://www.curvegrid.com/blog/2020-04-06-multibaas-intro/) and [developer documentation](https://docs.curvegrid.com/multibaas/).
-
-## Usage
-
-### Installation
-
-On your Hardhat workspace, set up a `package.json` file (if not yet added) with
+## Install
 
 ```bash
-npm init
+npm install --save-dev hardhat hardhat-multibaas-plugin @nomicfoundation/hardhat-ignition
 ```
 
-or
+## Configure
 
-```bash
-yarn init
-```
+Add the plugin to `plugins` and provide `mbConfig` in your Hardhat config:
 
-Then, add the `hardhat-multibaas-plugin` package:
+```ts
+import hardhatIgnitionPlugin from "@nomicfoundation/hardhat-ignition";
+import { configVariable, defineConfig } from "hardhat/config";
+import hardhatMultiBaasPlugin from "hardhat-multibaas-plugin";
 
-```bash
-npm i hardhat-multibaas-plugin --save-dev
-```
-
-or
-
-```bash
-yarn add hardhat-multibaas-plugin -D
-```
-
-### Configuration
-
-To configure `hardhat-multibaas-plugin`, you need to define a `MBConfig` configuration option:
-
-```typescript
-/**
- * A configuration option used to configure MultiBaas Deployer.
- *
- * @field host the MultiBaas instance's host URL
- * @field apiKey the API key used to deploy a smart contract
- * @field allowUpdateAddress a list of networks that support overriding an address
- * if there exists an address on MultiBaas with the same alias.
- * @field allowUpdateContract a list of networks that support overriding a contract
- * if there exists a contract on MultiBaas with the same (label, version) but
- * different bytecode. */
-interface MBConfig {
-  host: string;
-  apiKey: string;
-  allowUpdateAddress: string[];
-  allowUpdateContract: string[];
-}
-```
-
-To use `hardhat-multibaas-plugin` with `hardhat`, configure the `networks` and `mbConfig` fields in your `hardhat.config.ts` as follows:
-
-```typescript
-import "hardhat-multibaas-plugin";
-
-module.exports = {
-  defaultNetwork: "development",
+export default defineConfig({
+  plugins: [hardhatIgnitionPlugin, hardhatMultiBaasPlugin],
   networks: {
     development: {
-      url: `<YOUR MULTIBAAS DEPLOYMeENT URL>/web3/<YOUR API KEY>`,
-      chainId: `<NETWORK's CHAIN ID>`,
-      accounts: ["<ACCOUNT 1's PRIVATE KEY>", "<ACCOUNT 2's PRIVATE KEY>"],
-    },
+      type: "http",
+      chainType: "l1",
+      url: configVariable("MB_PLUGIN_RPC_URL"),
+      accounts: {
+        mnemonic: configVariable("MB_PLUGIN_MNEMONIC")
+      }
+    }
   },
   mbConfig: {
-    apiKey: "<YOUR API KEY>",
-    host: "<YOUR MULTIBAAS DEPLOYMENT URL>",
+    host: configVariable("MB_PLUGIN_HOST"),
+    apiKey: configVariable("MB_PLUGIN_API_KEY"),
     allowUpdateAddress: ["development"],
     allowUpdateContract: ["development"],
-  },
-  // other hardhat configurations...
-};
+    syncExisting: false,
+    requireChainIdMatch: true
+  }
+});
 ```
 
-A sample configuration file can be found in the [sample folder](./sample/hardhat.config.ts)
+Optional `mbConfig` fields:
+- `syncExisting`: When `true`, syncs all registered futures found in Ignition’s deployment result, even if they weren’t executed in the current run.
+- `requireChainIdMatch`: When `true` (default), compare MultiBaas chain ID with the Hardhat network chain ID and fail fast on mismatches.
 
-### Testing/Deploying smart contracts
+Behavior notes:
+- The plugin overrides `hardhat ignition deploy` and keeps Ignition’s prompts, reset behavior, and UI.
+- Only futures registered via `mb.link` are synced to MultiBaas.
+- By default, the plugin syncs only futures that Ignition executed in the current run.
+- When `syncExisting` is enabled, the plugin will sync all registered futures present in the deployment result, including previously deployed contracts.
 
-See the [sample folder](./sample) for a complete **Geting Started** guide with `hardhat-multibaas-plugin`.
+## Use with Ignition
 
-The plugin uses a single `deploy` function to upload a smart contract's artifact, deploy then link the contract on MultiBaas:
+Register any deployment (or `contractAt`) you want linked in MultiBaas by calling `mb.link` inside your module. The plugin performs MultiBaas linking only for registered futures.
 
-```typescript
-deploy: (
-  // A `ethers.js` Signer or a `hardhat-ethers` FactoryOptions
-  signerOrOptions: Signer | FactoryOptions,
-  contractName: string,
-  contractArguments?: unknown[],
-  options?: DeployOptions,
-) => Promise<DeployResult>;
+```ts
+import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
+import { mb } from "hardhat-multibaas-plugin/ignition";
+
+export default buildModule("GreeterModule", (m) => {
+  const greeter = m.contract("Greeter", ["Hello, world!"]);
+
+  mb.link(greeter, {
+    contractLabel: "greeter",
+    contractVersion: "1.0",
+    addressAlias: "greeter",
+    startingBlock: "-100"
+  });
+
+  return { greeter };
+});
 ```
 
-in which `DeployResult` is the data returned from a successful deployment using the plugin. It has the following fields:
+Then deploy the module:
 
-```typescript
-/**
- * Result of MultiBaas Deployer's deploy function.
- *
- * @field contract an `ethers.js`'s `Contract`
- * @field mbContract a MultiBaas contract
- * @field mbAddress a MultiBaas address
- **/
-export interface DeployResult {
-  contract: Contract;
-  mbContract: MultiBaasContract;
-  mbAddress: MultiBaasAddress;
-}
+```bash
+npx hardhat ignition deploy ignition/modules/GreeterModule.ts
 ```
 
-`DeployOptions` consists of different options that you can specify when deploying a contract using the plugin. It has the following fields:
+## Tests
 
-```typescript
-export interface DeployOptions {
-  /**
-   * Overwrite the default contractLabel. If set and a duplicate is found,
-   * the contract is assigned a newer version.
-   */
+```bash
+npm test
+```
+
+Note: the Ignition deploy override tests use a minimal fixture module under `test/fixtures/ignition` to avoid resolving the sample project dependencies during CI.
+
+## MultiBaas link options
+
+```ts
+interface MultiBaasLinkOptions {
   contractLabel?: string;
-  /**
-   * Version override. Will fail if another binary with the same version is found.
-   */
   contractVersion?: string;
-  /**
-   * Overwrite the default address alias. If set and a duplicate is found,
-   * the address is instead updated (or returned with an error, chosen by global setting `allowUpdateAddress`).
-   *
-   * The auto-generated address alias is never a duplicate.
-   */
   addressAlias?: string;
-
-  /**
-   * Override the default deploy transaction arguments
-   * (gasLimit, gasPrice, etc)
-   **/
-  overrides?: unknown;
-
-  /**
-   * The kind of the proxy. Defaults to 'transparent'.
-   **/
-  proxyKind?: "uups" | "transparent" | "beacon";
-
-  /**
-   * The block to start syncing the contract from.
-   *
-   * empty string: disable the MultiBaas Event Monitor
-   *  0: sync from the first block
-   * <0: sync from this number of blocks prior to the current block
-   * >0: sync from a specific block number
-   *
-   * Defaults to -100, or 100 blocks prior to the current block.
-   **/
   startingBlock?: string;
 }
 ```
 
-The `deployProxy` function will deploy a proxied smart contract that uses [OpenZeppelin's Hardhat Upgrades plugin](https://docs.openzeppelin.com/upgrades-plugins/1.x/hardhat-upgrades). It automatically deploys the implementation contract, proxy, and admin, as required, and then links the proxy smart contract. It defaults to a 'transparent' proxy type, but can be overridden.
+Notes:
+- `contractLabel` defaults to the lowercased contract name.
+- `contractVersion` defaults to `1.0` or auto-increments if a different bytecode already exists.
+- `startingBlock` defaults to `-100` (100 blocks before current).
 
-```typescript
-deployProxy: (
-  signerOrOptions: Signer | FactoryOptions,
-  contractName: string,
-  contractArguments?: unknown[],
-  options?: DeployOptions,
-) => Promise<DeployProxyResult>;
+## Upgradeable proxies
+
+Use Ignition’s proxy patterns and link the proxy address via `contractAt`:
+
+```ts
+const proxy = m.contract("TransparentUpgradeableProxy", [impl, admin, initData]);
+const proxiedGreeter = m.contractAt("ProxiedGreeter", proxy);
+mb.link(proxiedGreeter, { contractLabel: "proxied_greeter" });
 ```
 
-in which the `DeployProxyResult` extends the data included in `DeployResult` with the following additional fields:
+## Build
 
-```typescript
-export interface DeployProxyResult extends DeployResult {
-  adminAddress: string;
-  implementationAddress: string;
-}
+```bash
+npm run build
 ```
 
-For contracts that have been deployed outside of `hardhat-multibaas-plugin`, it is possible to simply link them in MultiBaas by calling the `link` function and providing the deployed address.
+## Using Legacy Hardhat v2
 
-```typescript
-link: (
-  signerOrOptions: Signer | FactoryOptions,
-  contractName: string,
-  address: string,
-  options?: DeployOptions,
-) => Promise<DeployResult>;
-```
+If you want to work with legacy Hardhat v2, refer to the following branch.
 
-## Copyright
-
-Copyright (c) 2021 Curvegrid Inc.
+https://github.com/curvegrid/hardhat-multibaas-plugin/tree/legacy/hardhat-v2

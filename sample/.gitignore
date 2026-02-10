@@ -1,0 +1,11 @@
+artifacts
+cache
+typechain
+typechain-types
+coverage
+coverage.json
+.env
+.DS_Store
+ignition/deployments
+deployment-config.*.ts
+!deployment-config.template.ts
