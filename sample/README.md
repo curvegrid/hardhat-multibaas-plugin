@@ -102,7 +102,7 @@ npm run deploy:series
 #### `<DEPLOYMENT_ID>` and `<FUTURE_ID>`
 
 ```sh
-deploy:greeter
+npm run deploy:greeter
 
 > hardhat-multibaas-plugin-sample-v3@1.0.0 deploy:greeter
 > npm run deploy:base -- ignition/modules/GreeterModule.ts
@@ -133,7 +133,7 @@ MultiBaas: Contract "greeter 1.0" already linked to address "greeter"
 ```
 
 ```sh
-npm run wipe chain-1337 GreeterModule#Greeter
+npm run ignition:wipe chain-1337 GreeterModule#Greeter
 
 > hardhat-multibaas-plugin-sample-v3@1.0.0 wipe
 > HARDHAT_NETWORK=development npx hardhat ignition wipe chain-1337 GreeterModule#Greeter
