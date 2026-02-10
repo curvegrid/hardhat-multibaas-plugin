@@ -57,7 +57,7 @@ Note:
 | `npm run deploy:proxy:greeter:reset` | Resets Ignition state then deploys the proxied Greeter module. |
 | `npm run deploy:series:reset` | Resets Ignition state then deploys the Series module. |
 | `npm run ignition:wipe <DEPLOYMENT_ID> <FUTURE_ID>` | Wipes local Ignition deployment state for `development`. |
-| `npm run ignition:deployments <DEPLOYMENT_ID>` | Lists Ignition deployments recorded for `development`. |
+| `npm run ignition:deployments` | Lists Ignition deployments recorded for `development`. |
 | `npm run ignition:status <DEPLOYMENT_ID>` | Shows Ignition deployment status for `development`. |
 | `npm run deploy:all` | Cleans then deploys MetaCoin, Greeter, linked Greeter, proxied Greeter, and Series in order. |
 | `npm run test` | Runs the Hardhat test suite for the sample. |
