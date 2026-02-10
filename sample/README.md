@@ -141,7 +141,6 @@ npm run ignition:wipe chain-1337 GreeterModule#Greeter
 GreeterModule#Greeter state has been cleared
 ```
 
-
 ## Notes
 
 - `ignition deploy` is overridden by the plugin to upload artifacts and link any futures registered via `mb.link`.
