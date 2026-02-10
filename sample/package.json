@@ -1,7 +1,7 @@
 {
-  "name": "hardhat-multibaas-plugin-sample-v3",
+  "name": "hardhat-multibaas-plugin-sample",
   "private": true,
-  "version": "1.0.0",
+  "version": "3.0.0",
   "description": "Sample Hardhat v3 project for hardhat-multibaas-plugin",
   "type": "module",
   "engines": {
