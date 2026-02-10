@@ -85,6 +85,32 @@ describe("mbConfig validation", () => {
     ]);
   });
 
+  it("rejects numeric host value", async () => {
+    const errors = await validateUserConfig({
+      mbConfig: {
+        host: 123,
+        apiKey: "key",
+      },
+    });
+
+    assert.equal(errors.length, 1);
+    assert.equal(errors[0].path[1], "host");
+    assert.match(errors[0].message, /must be a string or configuration variable/);
+  });
+
+  it("rejects boolean apiKey value", async () => {
+    const errors = await validateUserConfig({
+      mbConfig: {
+        host: "http://example.com",
+        apiKey: false,
+      },
+    });
+
+    assert.equal(errors.length, 1);
+    assert.equal(errors[0].path[1], "apiKey");
+    assert.match(errors[0].message, /must be a string or configuration variable/);
+  });
+
   it("accepts valid mbConfig", async () => {
     const errors = await validateUserConfig({
       mbConfig: {
