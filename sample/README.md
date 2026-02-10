@@ -56,9 +56,9 @@ Note:
 | `npm run deploy:link:greeter:reset` | Resets Ignition state then deploys the linked Greeter module. |
 | `npm run deploy:proxy:greeter:reset` | Resets Ignition state then deploys the proxied Greeter module. |
 | `npm run deploy:series:reset` | Resets Ignition state then deploys the Series module. |
-| `npm run ignition:wipe <DEPLOYMENT_ID> <FUTURE_ID>` | Wipes local Ignition deployment state for `development`. |
+| `npm run ignition:wipe -- <DEPLOYMENT_ID> <FUTURE_ID>` | Wipes local Ignition deployment state for `development`. |
 | `npm run ignition:deployments` | Lists Ignition deployments recorded for `development`. |
-| `npm run ignition:status <DEPLOYMENT_ID>` | Shows Ignition deployment status for `development`. |
+| `npm run ignition:status -- <DEPLOYMENT_ID>` | Shows Ignition deployment status for `development`. |
 | `npm run deploy:all` | Cleans then deploys MetaCoin, Greeter, linked Greeter, proxied Greeter, and Series in order. |
 | `npm run test` | Runs the Hardhat test suite for the sample. |
 
@@ -133,10 +133,14 @@ MultiBaas: Contract "greeter 1.0" already linked to address "greeter"
 ```
 
 ```sh
-npm run ignition:wipe chain-1337 GreeterModule#Greeter
+npm run ignition:wipe -- chain-1337 GreeterModule#Greeter
 
-> hardhat-multibaas-plugin-sample-v3@1.0.0 wipe
-> HARDHAT_NETWORK=development npx hardhat ignition wipe chain-1337 GreeterModule#Greeter
+> hardhat-multibaas-plugin-sample-v3@1.0.0 ignition:wipe
+> npm run ignition:base -- wipe chain-1337 GreeterModule#Greeter
+
+
+> hardhat-multibaas-plugin-sample-v3@1.0.0 ignition:base
+> HARDHAT_NETWORK=development hardhat ignition wipe chain-1337 GreeterModule#Greeter
 
 GreeterModule#Greeter state has been cleared
 ```
