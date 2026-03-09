@@ -12,19 +12,20 @@ jobs:
     name: Publish
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    permissions:
+      id-token: write # Required for OIDC
+      contents: read
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: "${{ env.NODE_VER }}"
-        registry-url: https://registry.npmjs.org/
-    - name: Install Deps
-      run: npm install
-    - name: Build
-      run: npm run build
-    - name: Publish
-      env:
-        NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
-      run: npm publish --access public
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "${{ env.NODE_VER }}"
+          registry-url: https://registry.npmjs.org/
+      - name: Install Deps
+        run: npm install
+      - name: Build
+        run: npm run build
+      - name: Publish
+        run: npm publish --access public
